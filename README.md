@@ -1,4 +1,5 @@
 # New Relic Platform Agent Core
+Version: 0.2.4
 
 **CONFIDENTIAL** - All contents of this repository are CONFIDENTIAL per the terms of agreement between your organization and New Relic. Additionally, the code you develop based on the contents of this repository is also confidential and should not be shared outside your firm.
 
