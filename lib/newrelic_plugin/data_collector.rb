@@ -51,7 +51,7 @@ module NewRelic
       # NewRelicConnection Handling
       #
       def nrmsg
-        @nrmsg||=nrobj.start_message @agent.instance_label,@agent.guid,@poll_interval
+        @nrmsg||=nrobj.start_message @agent.instance_label,@agent.guid,@agent.version,@poll_interval
       end
       def nrmsg_send
         return unless @nrmsg

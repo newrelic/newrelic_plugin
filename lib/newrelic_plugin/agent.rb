@@ -9,7 +9,7 @@ module NewRelic
     module Agent
       class Base
         class << self
-          attr_reader :label,:instance_label_proc,:guid
+          attr_reader :label,:instance_label_proc,:guid,:version
           attr_accessor :config_options_list
 
 
@@ -22,6 +22,13 @@ module NewRelic
           end
 
           #
+          # Define version for this agent
+          #
+          def agent_version str
+            @version = str
+          end
+
+          #
           #
           # Human Readable labels for plugin.
           #   label - Name of the plugin
@@ -31,6 +38,18 @@ module NewRelic
           def agent_human_labels label,&block
             @label=label
             @instance_label_proc=block
+          end
+
+          #
+          #
+          # Support for single instance, non-configurable agents.
+          #
+          #
+          def no_config_required
+            @no_config_required=true
+          end
+          def config_required?
+            !@no_config_required
           end
 
           #
@@ -64,6 +83,9 @@ module NewRelic
           raise "Did not set GUID" if @guid.nil? or @guid=="" or @guid=="guid" or @guid=="DROP_GUID_FROM_PLUGIN_HERE"
           @guid
         end
+        def version
+          self.class.version
+        end
         def label
           self.class.label
         end
@@ -74,8 +96,10 @@ module NewRelic
           @agent_info=agent_info
           @ident=agent_info[:ident]
           @options=options
-          self.class.config_options_list.each do |config|
-            self.send("#{config}=",options[config])
+          if self.class.config_options_list
+            self.class.config_options_list.each do |config|
+              self.send("#{config}=",options[config])
+            end
           end
           @last_time=nil
 

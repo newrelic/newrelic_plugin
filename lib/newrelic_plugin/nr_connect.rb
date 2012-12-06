@@ -10,18 +10,20 @@ require 'json'
 # Usage:
 #
 #   nrobj=NewRelic::Plugin::NewRelicConnection.new license_key:"xxx",host:"xxx",port:80,log_http:true,log_metrics:true # log_http,host and port are optional; license key is not.
-#   msg=nrobj.start_message <component_name>,<component_guid>,<duration_in_seconds>
+#   msg=nrobj.start_message <component_name>,<component_guid>,<component_version>,<duration_in_seconds>
 #   msg.add_stat basename,count_unit,value_unit,count,value,opts={} # opts can include :min, :max, and :sum_of_squares
 #   msg.send_message # Send the list of stats to New Relic
 #
 # Example:
 #   nrobj=NewRelic::Plugin::NewRelicConnection.new license_key:"bootstrap_newrelic_admin_license_key_000",host:"localhost",port:8081,log_http:true,log_metrics:true
-#   msg=nrobj.start_message "A Kewl Component","12345678",60
-#   msg.add_stat_basename "TestMetric","packets","bytes",2,34,min:31,max:54,sum_of_squares:1234
-#   msg.add_stat_basename "AValueMetric","","bytes",nil,34,min:31,max:54,sum_of_squares:1234
-#   msg.add_stat_basename "ACountMetric","total","",24,nil
+#   msg=nrobj.start_message "A Kewl Component","12345678","0.0.1",60
+#   msg.add_stat_fullname "Component/TestMetric1[Bytes/Seconds]",2,34,min:31,max:54,sum_of_squares:1234
+#   msg.add_stat_fullname "Component/AnotherTest[Bytes/Seconds]",2,34,min:31,max:54,sum_of_squares:1234
+#   msg.add_stat_fullname "Component/TestMetric2[Bytes/Seconds]",2,34,min:31,max:54,sum_of_squares:1234
+#   msg.add_stat_fullname "Component/AnotherMetric[Bytes/Seconds]",2,34,min:31,max:54,sum_of_squares:1234
 #   msg.send # Send the list of stats to New Relic
 #
+
 module NewRelic
   module Plugin
     class NewRelicConnection
@@ -38,8 +40,8 @@ module NewRelic
       #
       # Start creating a message containing a set of metrics to New Relic.
       #
-      def start_message component_name,component_guid,duration_in_seconds
-        NewRelic::Plugin::NewRelicMessage.new self,component_name,component_guid,duration_in_seconds
+      def start_message component_name,component_guid,component_version,duration_in_seconds
+        NewRelic::Plugin::NewRelicMessage.new self,component_name,component_guid,component_version,duration_in_seconds
       end
 
       #################### Internal Only
@@ -88,17 +90,13 @@ module NewRelic
       # Create an object to send metrics
       #
       #
-      def initialize connection,component_name,component_guid,duration_in_seconds
+      def initialize connection,component_name,component_guid,component_version,duration_in_seconds
         @connection=connection
         @component_name=component_name
         @component_guid=component_guid
+        @component_version=component_version
         @duration_in_seconds=duration_in_seconds
         @metrics=[] # Metrics being saved
-      end
-      def add_stat_basename basename,count_unit,value_unit,count,value,opts={}
-        count_unit||=""
-        value_unit||=""
-        add_stat_fullname "Component/#{basename}[#{count_unit}:#{value_unit}]",count,value,opts
       end
       def add_stat_fullname metric_name,count,value,opts={}
         entry={}
@@ -135,7 +133,7 @@ module NewRelic
             response=nr.connect.post do |req|
               req.url "/api/v1/metrics"
               req.headers['Content-Type'] = 'application/json'
-              req.body={
+              data={
                   "description" => {
                       "name"=>@component_name,
                       "guid"=>@component_guid,
@@ -144,7 +142,9 @@ module NewRelic
                   },
                   "duration" => @duration_in_seconds,
                   "metrics" => metrics
-                }.to_json
+                }
+              data["description"]["agent_version"] = @component_version if @component_version
+              req.body = data.to_json
             end
           rescue =>err
             puts "HTTP Connection Error: #{err.inspect}"

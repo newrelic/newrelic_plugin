@@ -13,6 +13,7 @@ module NewRelic
       def self.setup_and_run component_type_filter=nil
         run=new
         run.setup_from_config component_type_filter
+        run.setup_no_config_agents
         run.loop_forever
       end
       def initialize
@@ -40,10 +41,21 @@ module NewRelic
           config_list=plugin_config.agents[agent_id.to_s]
           next unless config_list
           [config_list].flatten.each do |config|
+            next unless config
             # Convert keys to symbols...
             config.keys.each {|key|config[(key.to_sym rescue key) || key] = config.delete(key)}
             name=config.delete(:name) # Pull out name and remove from hash
             agent_setup.create_agent agent_id,name,config
+          end
+        end
+      end
+      #
+      # Add an entry for agents that require no configuration (and hence no instances)
+      #
+      def setup_no_config_agents
+        installed_agents.each do |agent_id,installed_agent|
+          unless installed_agent[:agent_class].config_required?
+            agent_setup.create_agent agent_id,installed_agent[:agent_class].label,{}
           end
         end
       end
@@ -62,6 +74,10 @@ module NewRelic
           puts err_msg
           raise NoAgents, err_msg
         end
+        installed_agents.each do |agent_id,installed_agent|
+          version = installed_agent[:agent_class].version
+          puts "Agent #{installed_agent[:label]} is at version #{version}" if version
+        end
         configured_agents.each do |agent|
           agent.startup if agent.respond_to? :startup
         end
@@ -75,7 +91,11 @@ module NewRelic
             # Call each agent
             cnt=0
             configured_agents.each do |agent|
-              cnt+=agent.run @poll_cycle
+              begin
+                cnt+=agent.run @poll_cycle
+              rescue => err
+                puts "Error occurred in poll cycle: #{err}"
+              end
             end
             puts "Gathered #{cnt} statistics"
             #
