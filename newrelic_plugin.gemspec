@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name          = 'newrelic_plugin'
-  s.version       = '0.0.0'
-  s.date              = '2013-01-17'
+  s.version       = '0.2.10'
+  s.date              = '2013-01-23'
   s.rubyforge_project = 'newrelic_plugin'
 
   ## Make sure your summary is short. The description may be as long
@@ -56,10 +56,10 @@ send plugin data to New RElic from non-application sources.
   # = MANIFEST =
   s.files = %w[
     Gemfile
+    Gemfile.lock
     LICENSE
     README.rdoc
     Rakefile
-    build_release_repo.sh
     lib/newrelic_plugin.rb
     lib/newrelic_plugin/agent.rb
     lib/newrelic_plugin/config.rb
@@ -72,8 +72,6 @@ send plugin data to New RElic from non-application sources.
     lib/newrelic_plugin/run.rb
     lib/newrelic_plugin/setup.rb
     lib/newrelic_plugin/simple_syntax.rb
-    newrelic_plugin.gemspec
-    newrelic_plugin.gemspec
     newrelic_plugin.gemspec
   ]
   # = MANIFEST =
