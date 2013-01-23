@@ -1,0 +1,36 @@
+= New Relic Platform Agent SDK
+
+*CONFIDENTIAL* - All contents of this repository are CONFIDENTIAL
+per the terms of agreement between your organization and New
+Relic. Additionally, the code you develop based on the contents of
+this repository is also confidential and should not be shared outside
+your firm.
+
+== Requirements
+
+* Tested with Ruby 1.8.7 and 1.9.3
+* New Relic account on rpm.newrelic.com, with early access enabled 
+  (contact cooper@newrelic.com to set up early access)
+
+== Get Started
+
+This repo represents the core Ruby gem used to build plugin agents for
+the New Relic platform. If you are
+looking to build or use a platform component, please refer to the 
+getting started documentation[http://newrelic.com/docs/platform/getting-started].
+
+Until this gem is published in rubygems.org, you will need to clone this repository
+and build the gem manually:
+
+    git clone git@github.com:newrelic-platform/newrelic_plugin.git
+    cd newrelic_plugin
+    rake build
+    gem install pkg/newrelic_plugin*
+
+== Questions? Comments?
+
+Please use the 
+Issues[https://github.com/newrelic-platform/newrelic_plugin_development/issues] feature of the
+newrelic_plugin_development[https://github.com/newrelic-platform/newrelic_plugin_development]
+repository to report issues, ask questions, make suggestions, etc.
+

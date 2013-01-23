@@ -1,11 +1,11 @@
+module NewRelic
+  module Plugin
+    module Processor
 #
 #
 # Processor Base Class
 #
 #
-module NewRelic
-  module Plugin
-    module Processor
       class Base
         attr_reader :ident,:label
         def initialize ident,label

@@ -1,4 +1,6 @@
 require 'yaml'
+module NewRelic
+  module Plugin
 #
 #
 # Process global config file for NewRelic. This is defined per execution environment.
@@ -8,40 +10,38 @@ require 'yaml'
 #
 # The system configuration can be accessed as a hash using this method. For example:
 #
-#   plugin_config.config['xxx']
+#   NewRelic::Plugin::Config.config.options['xxx']
 # or:
-#   plugin_config.newrelic['...']
+#   NewRelic::Plugin::Config.config.newrelic['...']
 # or:
-#   plugin_config.agents['...']
+#   NewRelic::Plugin::Config.config.agents['...']
 #
 #
-module NewRelic
-  module Plugin
     class Config
-      attr_reader :config
+      attr_reader :options
       # Creates an instance of a configuration object, loading the configuration
       # from the YAML configuration file. Note: this method should not be used
       # directly, rather the global method +config+ should be referenced instead.
       def initialize
-        @config = YAML::load(Config.config_yaml) if Config.config_yaml
-        @config = YAML.load_file(Config.config_file) unless @config
+        @options = YAML::load(Config.config_yaml) if Config.config_yaml
+        @options = YAML.load_file(Config.config_file) unless @options
       end
 
       #
       # Return a hash of NewRelic configuration information.
       #
-      # Usage: plugin_config.newrelic[...]
+      # Usage: NewRelic::Plugin::Config.config.newrelic[...]
       #
       def newrelic
-        @config["newrelic"]
+        @options["newrelic"]
       end
       #
       # Return a hash of agent configuration information.
       #
-      # Usage: plugin_config.agents[...]
+      # Usage: NewRelic::Plugin::Config.config.agents[...]
       #
       def agents
-        @config["agents"]
+        @options["agents"]
       end
 
       #
@@ -52,7 +52,7 @@ module NewRelic
       def self.config_file= config_file
         @config_file=config_file
         @config_yaml=nil
-        @config_hash=nil
+        @instance=nil
       end
       def self.config_file
         @config_file||="config/newrelic_plugin.yml"
@@ -65,7 +65,7 @@ module NewRelic
       def self.config_yaml= config_yaml
         @config_yaml=config_yaml
         @config_file=nil
-        @config_hash=nil
+        @instance=nil
       end
       def self.config_yaml
         @config_yaml
@@ -74,7 +74,7 @@ module NewRelic
       # Returns a memoized version of the configuration object.
       #
       def self.config
-        @config_hash||=NewRelic::Plugin::Config.new
+        @instance||=NewRelic::Plugin::Config.new
       end
     end
   end

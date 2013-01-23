@@ -1,11 +1,11 @@
+module NewRelic
+  module Plugin
 #
 # Setup support methods.
 #
 # Author:: Lee Atchison <lee@newrelic.com>
 # Copyright:: Copyright (c) 2012 New Relic, Inc.
 #
-module NewRelic
-  module Plugin
     #
     # Setup and Register new agent types and new processors
     #
@@ -14,9 +14,9 @@ module NewRelic
         def install_agent ident,klass
           @installed_agents||={}
           @installed_agents[ident] = {
-              agent_class: klass::Agent,
-              label: klass::Agent.label,
-              ident: ident
+              :agent_class => klass::Agent,
+              :label => klass::Agent.label,
+              :ident => ident
           }
         end
         #def install_processor klass

@@ -1,11 +1,11 @@
+module NewRelic
+  module Plugin
 #
 # Run class. Provides entry points and polling initiation support.
 #
 # Author:: Lee Atchison <lee@newrelic.com>
 # Copyright:: Copyright (c) 2012 New Relic, Inc.
 #
-module NewRelic
-  module Plugin
     class Run
       #
       # Primary Driver entry point
@@ -17,7 +17,7 @@ module NewRelic
         run.loop_forever
       end
       def initialize
-        @poll_cycle = (plugin_config.newrelic["poll"] || 60).to_i
+        @poll_cycle = (NewRelic::Plugin::Config.config.newrelic["poll"] || 60).to_i
         @poll_cycle = 60 if (@poll_cycle <= 0) or (@poll_cycle >= 600)
         puts "WARNING: Poll cycle differs from 60 seconds (current is #{@poll_cycle})" if @poll_cycle!=60
       end
@@ -35,10 +35,10 @@ module NewRelic
         agent_setup.agents
       end
       def setup_from_config component_type_filter=nil
-        return unless plugin_config.agents
+        return unless NewRelic::Plugin::Config.config.agents
         installed_agents.each do |agent_id,installed_agent|
           next if component_type_filter and agent_id!=component_type_filter
-          config_list=plugin_config.agents[agent_id.to_s]
+          config_list=NewRelic::Plugin::Config.config.agents[agent_id.to_s]
           next unless config_list
           [config_list].flatten.each do |config|
             next unless config
@@ -70,7 +70,7 @@ module NewRelic
       def loop_forever
         if configured_agents.size==0
           err_msg = "No agents configured!"
-          err_msg+= " Check the agents portion of your yml file." unless plugin_config.config.empty?
+          err_msg+= " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
           puts err_msg
           raise NoAgents, err_msg
         end

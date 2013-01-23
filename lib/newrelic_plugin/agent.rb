@@ -1,11 +1,11 @@
+module NewRelic
+  module Plugin
 #
 # Primary newrelic_plugin agent.
 #
 # Author:: Lee Atchison <lee@newrelic.com>
 # Copyright:: Copyright (c) 2012 New Relic, Inc.
 #
-module NewRelic
-  module Plugin
     module Agent
       class Base
         class << self
@@ -61,7 +61,7 @@ module NewRelic
             @config_options_list||=[]
             args.each do |config|
               attr_accessor config
-              @config_options_list<<config
+              @config_options_list << config
             end
           end
         end
@@ -77,7 +77,7 @@ module NewRelic
           # Verify GUID is set correctly...
           #
           if @guid=="guid" or @guid=="DROP_GUID_FROM_PLUGIN_HERE"
-            @guid = plugin_config.newrelic['guids'][agent_info[:ident].to_s] if plugin_config.newrelic['guids']
+            @guid = NewRelic::Plugin::Config.config.newrelic['guids'][agent_info[:ident].to_s] if NewRelic::Plugin::Config.config.newrelic['guids']
             puts "NOTE: GUID updated for #{instance_label} at run-time to '#{@guid}'"
           end
           raise "Did not set GUID" if @guid.nil? or @guid=="" or @guid=="guid" or @guid=="DROP_GUID_FROM_PLUGIN_HERE"

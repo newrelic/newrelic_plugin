@@ -1,0 +1,24 @@
+PATH
+  remote: .
+  specs:
+    newrelic_plugin (0.0.0)
+      faraday (>= 0.8.1)
+      json
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    faraday (0.8.4)
+      multipart-post (~> 1.1)
+    json (1.7.5)
+    minitest (3.4.0)
+    multipart-post (1.1.5)
+    vcr (2.2.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  minitest
+  newrelic_plugin!
+  vcr

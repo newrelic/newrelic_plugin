@@ -1,4 +1,3 @@
-require "newrelic_plugin/version"
 require "newrelic_plugin/error"
 require "newrelic_plugin/config"
 require "newrelic_plugin/nr_connect"
@@ -12,6 +11,7 @@ require "newrelic_plugin/processors/rate_processor" # port needed
 
 module NewRelic
   module Plugin
+    VERSION = "0.2.10"
   end
   module Processor
   end

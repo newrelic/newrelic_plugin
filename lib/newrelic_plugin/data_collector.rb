@@ -1,10 +1,10 @@
+module NewRelic
+  module Plugin
 #
 # Gather's data from agent and presents it to nr_connect for processing.
 #
 # This is a wrapper for nr_connect used in the context of an agent.
 #
-module NewRelic
-  module Plugin
     class DataCollector
       #
       #
@@ -16,9 +16,9 @@ module NewRelic
             "Component/#{metric_name}[#{units}]",
             1,
             data,
-            min:data,
-            max:data,
-            sum_of_squares: (data*data)
+            :min => data,
+            :max => data,
+            :sum_of_squares => (data*data)
         )
         #puts "Metric '#{metric_name}' (#{units}): raw: #{value}, processed: #{data} (#{processor_type})" if verbose?
         @cnt+=1
@@ -44,7 +44,7 @@ module NewRelic
 
       def verbose?
         return @verbose unless @verbose.nil?
-        @verbose=plugin_config.newrelic["verbose"].to_i>0
+        @verbose=NewRelic::Plugin::Config.config.newrelic["verbose"].to_i>0
       end
 
       #
@@ -59,7 +59,7 @@ module NewRelic
         @nrmsg=nil
       end
       def nrobj
-        @nrobj||=NewRelic::Plugin::NewRelicConnection.new plugin_config.newrelic
+        @nrobj||=NewRelic::Plugin::NewRelicConnection.new NewRelic::Plugin::Config.config.newrelic
       end
 
     end

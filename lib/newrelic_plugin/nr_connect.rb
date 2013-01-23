@@ -1,5 +1,8 @@
 require 'faraday'
 require 'json'
+
+module NewRelic
+  module Plugin
 #
 # NewRelic driver. Provides all methods necessary for accessing the NewRelic service.
 # Used to store data into NewRelic service.
@@ -23,9 +26,6 @@ require 'json'
 #   msg.add_stat_fullname "Component/AnotherMetric[Bytes/Seconds]",2,34,min:31,max:54,sum_of_squares:1234
 #   msg.send # Send the list of stats to New Relic
 #
-
-module NewRelic
-  module Plugin
     class NewRelicConnection
       #
       # Allowed configuration Values:
@@ -49,7 +49,7 @@ module NewRelic
       # Create HTTP tunnel to New Relic
       #
       def connect
-        @connect||=Faraday.new(url:url) do |builder|
+        @connect||=Faraday.new(:url => url) do |builder|
           builder.request  :url_encoded
           builder.response :logger if @config["log_http"].to_i>0
           builder.use AuthenticationMiddleware,license_key
@@ -147,7 +147,7 @@ module NewRelic
               req.body = data.to_json
             end
           rescue =>err
-            puts "HTTP Connection Error: #{err.inspect}"
+            puts "HTTP Connection Error: #{err.inspect} #{err.message}"
           end
           return_status=nil
           if response.nil?
@@ -186,7 +186,7 @@ module NewRelic
             metric_group.each do |metric|
               val_strs=[]
               [:count,:total,:min,:max,:sum_of_squares].each do |key|
-                val_strs<<"#{key}: #{metric[key]}" if metric[key]
+                val_strs << "#{key}: #{metric[key]}" if metric[key]
               end
               puts "    #{metric[:metric_name]}: #{val_strs.join(', ')}"
             end
@@ -202,19 +202,10 @@ module NewRelic
       # array of metrics small enough to fit in a single HTTP transaction
       #
       def bulkify metrics
-        ret=[]
-        intermediate=[]
-        metrics.each do |metric|
-          intermediate<<metric
-          if intermediate.size>=50 # This should be more tuned to the actual size of the data to be sent, also can we fit more in each packet?
-            ret<<intermediate
-            intermediate=[]
-          end
-        end
-        ret<<intermediate if intermediate.size>0
-        ret
+        # Limit the uploads to 5000 metrics per request.  Consider throwing an error if there are more 
+        # than this--the documented limit is 5000 but at this writing unenforced by the server.
+        metrics.each_slice(5000).to_a
       end
-
 
       def nr
         @connection
