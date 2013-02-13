@@ -55,7 +55,7 @@ module NewRelic
       end
       def nrmsg_send
         return unless @nrmsg
-        @nrmsg.send
+        @nrmsg.send_metrics
         @nrmsg=nil
       end
       def nrobj

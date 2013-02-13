@@ -17,7 +17,7 @@ your firm.
 This repo represents the core Ruby gem used to build plugin agents for
 the New Relic platform. If you are
 looking to build or use a platform component, please refer to the 
-getting started documentation[http://newrelic.com/docs/platform/getting-started].
+getting started documentation[http://newrelic.com/docs/platform/plugin-development].
 
 Until this gem is published in rubygems.org, you will need to use this
 gem by adding it to your bundler[http://gembundler.com] Gemfile like this:

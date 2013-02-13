@@ -1,0 +1,17 @@
+{
+  "agent": {
+    "host" : "localhost",
+    "name" : "Test",
+    "version" : "1.0.0" },
+  "components": [
+    { "name": "Xtra DB",
+      "guid": "com.newrelic.test.Plugin",
+      "duration" : 120,
+      "metrics" : {
+        "one": 100, 
+        "two": [10,2,2,8,68]
+       }
+    } 
+  ] 
+}
+

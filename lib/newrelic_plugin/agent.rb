@@ -77,6 +77,7 @@ module NewRelic
           # Verify GUID is set correctly...
           #
           if @guid=="guid" or @guid=="DROP_GUID_FROM_PLUGIN_HERE"
+            #this feels tightly coupled to the config class, testing this is difficult, thinking about refactoring (NH)
             @guid = NewRelic::Plugin::Config.config.newrelic['guids'][agent_info[:ident].to_s] if NewRelic::Plugin::Config.config.newrelic['guids']
             puts "NOTE: GUID updated for #{instance_label} at run-time to '#{@guid}'"
           end

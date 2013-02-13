@@ -3,6 +3,9 @@ require 'rake'
 require 'date'
 require "bundler/gem_tasks"
 
+# Tasks based on RakeGem project
+# https://raw.github.com/mojombo/rakegem
+
 #############################################################################
 #
 # Helper functions
@@ -53,14 +56,6 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-desc "Generate RCov test coverage and open in your browser"
-task :coverage do
-  require 'rcov'
-  sh "rm -fr coverage"
-  sh "rcov test/test_*.rb"
-  sh "open coverage/index.html"
-end
-
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
@@ -71,19 +66,6 @@ Rake::RDocTask.new do |rdoc|
   rdoc.main = "README.rdoc"
 end
 
-desc "Open an irb session preloaded with this library"
-task :console do
-  sh "irb -rubygems -I./lib -r ./lib/#{name}.rb"
-end
-
-
-#############################################################################
-#
-# Custom tasks (add your own tasks here)
-#
-#############################################################################
-
-
 
 #############################################################################
 #
@@ -91,7 +73,8 @@ end
 #
 #############################################################################
 
-desc "Create tag v#{version} and build and push #{gem_file} to Rubgems"
+=begin Not publishing yet
+desc "Create tag v#{version} and build and push #{gem_file} to Rubygems"
 task :release => :build do
   unless `git branch` =~ /^\* master$/
     puts "You must be on the master branch to release!"
@@ -103,6 +86,7 @@ task :release => :build do
   sh "git push origin v#{version}"
   sh "gem push pkg/#{name}-#{version}.gem"
 end
+=end
 
 desc "Build #{gem_file} into the pkg directory"
 task :build do
