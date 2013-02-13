@@ -5,8 +5,8 @@ Gem::Specification.new do |s|
 
   ## Leave these as is they will be modified for you by the rake gemspec task.
   s.name          = 'newrelic_plugin'
-  s.version       = '0.0.0'
-  s.date              = '2013-01-17'
+  s.version       = '0.2.11'
+  s.date              = '2013-02-13'
   s.rubyforge_project = 'newrelic_plugin'
 
   ## Edit these as appropriate
@@ -45,13 +45,13 @@ send plugin data to New RElic from non-application sources.
     LICENSE
     README.rdoc
     Rakefile
-    build_release_repo.sh
     lib/newrelic_plugin.rb
     lib/newrelic_plugin/agent.rb
     lib/newrelic_plugin/config.rb
     lib/newrelic_plugin/data_collector.rb
     lib/newrelic_plugin/error.rb
-    lib/newrelic_plugin/nr_connect.rb
+    lib/newrelic_plugin/new_relic_connection.rb
+    lib/newrelic_plugin/new_relic_message.rb
     lib/newrelic_plugin/processor.rb
     lib/newrelic_plugin/processors/epoch_counter_processor.rb
     lib/newrelic_plugin/processors/rate_processor.rb
@@ -59,8 +59,11 @@ send plugin data to New RElic from non-application sources.
     lib/newrelic_plugin/setup.rb
     lib/newrelic_plugin/simple_syntax.rb
     newrelic_plugin.gemspec
-    newrelic_plugin.gemspec
-    newrelic_plugin.gemspec
+    test/agent_test.rb
+    test/fixtures/valid_payload.json
+    test/manual_test.rb
+    test/new_relic_message_test.rb
+    test/test_helper.rb
   ]
   # = MANIFEST =
 
