@@ -5,7 +5,7 @@ new_relic_message = NewRelic::Plugin::NewRelicMessage.new('fake connection', 'ma
 new_relic_message.add_stat_fullname('test metric', 2, 2, :min => 1, :max => 3, :sum_of_squares => 10) 
 new_relic_message.add_stat_fullname('other metric', 2, 2, :min => 2, :max => 2, :sum_of_squares => 8) 
 
-license_key = '18af29ef86ffff0eca7b0114af4041c0446cc26d' #staging "Platform Testing" account
+# license_key =
 
 puts <<-EOF
 ########################################################
