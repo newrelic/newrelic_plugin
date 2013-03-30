@@ -1,3 +1,8 @@
+lib = File.expand_path('../lib', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'newrelic_plugin/version'
+
 Gem::Specification.new do |s|
   s.specification_version = 2 if s.respond_to? :specification_version=
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -5,8 +10,8 @@ Gem::Specification.new do |s|
 
   ## Leave these as is they will be modified for you by the rake gemspec task.
   s.name          = 'newrelic_plugin'
-  s.version       = '0.2.11'
-  s.date              = '2013-02-13'
+  s.version       = NewRelic::Plugin::VERSION
+  s.date              = '2013-03-29'
   s.rubyforge_project = 'newrelic_plugin'
 
   ## Edit these as appropriate
@@ -62,6 +67,7 @@ send plugin data to New Relic from non-application sources.
     test/fixtures/valid_payload.json
     test/manual_test.rb
     test/new_relic_message_test.rb
+    test/processors/epoch_counter_test.rb
     test/test_helper.rb
   ]
   # = MANIFEST =
