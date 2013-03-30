@@ -7,6 +7,25 @@ class AgentTest < Test::Unit::TestCase
     @agent_class = TestingAgent::Agent.dup
   end
 
+  context :report_counter_metric do
+    setup do
+      test_config_class = Struct.new(:newrelic) {
+          def newrelic; {}; end
+      }
+      NewRelic::Plugin::Config.stubs(:config).returns(test_config_class.new)
+      @agent_class.any_instance.stubs(:data_collector).returns(NewRelic::Plugin::DataCollector.new(@agent_class, 60))
+    end
+    should "respond to first call for a metric" do
+      agent = @agent_class.new("Name", @agent_info)
+      agent.report_counter_metric("Whiskey/Pours", "drams/sec", 42)
+    end
+    should "respond to repeated calls using the same metric name" do
+      agent = @agent_class.new("Name", @agent_info)
+      agent.report_counter_metric("Whiskey/Pours", "drams/sec", 42)
+      agent.report_counter_metric("Whiskey/Pours", "drams/sec", 99)
+    end
+  end
+
   context :agent_guid do
     should 'set guid' do
       @agent_class.class_eval do
