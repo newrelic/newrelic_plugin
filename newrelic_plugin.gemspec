@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "New Relic Ruby Plugin SDK"
   s.description = <<-EOF
 This is the core gem for developing plugins for New Relic.  It is used to 
-send plugin data to New RElic from non-application sources.
+send plugin data to New Relic from non-application sources.
   EOF
 
   s.authors       = ["Lee Atchison"]
