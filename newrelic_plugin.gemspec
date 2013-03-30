@@ -31,10 +31,9 @@ send plugin data to New Relic from non-application sources.
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
-  #s.add_development_dependency "minitest"
-  #s.add_development_dependency "vcr"
   s.add_development_dependency 'shoulda-context'
   s.add_development_dependency 'mocha'
+  s.add_development_dependency 'timecop'
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
