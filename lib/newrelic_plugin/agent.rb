@@ -70,6 +70,8 @@ module NewRelic
         # Instance Info
         #
         attr_reader :name,:agent_info
+        attr_accessor :data_collector
+
         def guid
           return @guid if @guid
           @guid=self.class.guid
@@ -102,6 +104,7 @@ module NewRelic
               self.send("#{config}=",options[config])
             end
           end
+          @processors = {}
           @last_time=nil
 
           #
@@ -124,7 +127,16 @@ module NewRelic
         #
         def report_metric metric_name,units,value,opts={}
           return if value.nil?
-          @data_collector.add_data metric_name,units,value.to_f,opts
+          data_collector.add_data metric_name,units,value.to_f,opts
+        end
+
+        # Report change in a counter's value per second
+        def report_counter_metric(metric, type, value)
+          if @processors[metric].nil?
+            @processors[metric] = NewRelic::Processor::EpochCounter.new
+          end
+
+          report_metric(metric, type, @processors[metric].process(value))
         end
 
         #
@@ -139,10 +151,10 @@ module NewRelic
 
           #
           # Collect Data
-          @data_collector=DataCollector.new self,poll_interval
+          self.data_collector = DataCollector.new(self, poll_interval)
           poll_cycle
-          cnt=@data_collector.process
-          @data_collector=nil
+          cnt = data_collector.process
+          self.data_collector = nil
 
           #
           # End of cycle work, if any

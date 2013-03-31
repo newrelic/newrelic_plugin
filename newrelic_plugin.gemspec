@@ -1,3 +1,8 @@
+lib = File.expand_path('../lib', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'newrelic_plugin'
+
 Gem::Specification.new do |s|
   s.specification_version = 2 if s.respond_to? :specification_version=
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -5,15 +10,15 @@ Gem::Specification.new do |s|
 
   ## Leave these as is they will be modified for you by the rake gemspec task.
   s.name          = 'newrelic_plugin'
-  s.version       = '0.2.11'
-  s.date              = '2013-02-13'
+  s.version       = NewRelic::Plugin::VERSION
+  s.date              = '2013-03-31'
   s.rubyforge_project = 'newrelic_plugin'
 
   ## Edit these as appropriate
   s.summary     = "New Relic Ruby Plugin SDK"
   s.description = <<-EOF
 This is the core gem for developing plugins for New Relic.  It is used to 
-send plugin data to New RElic from non-application sources.
+send plugin data to New Relic from non-application sources.
   EOF
 
   s.authors       = ["Lee Atchison"]
@@ -31,10 +36,9 @@ send plugin data to New RElic from non-application sources.
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
-  #s.add_development_dependency "minitest"
-  #s.add_development_dependency "vcr"
   s.add_development_dependency 'shoulda-context'
   s.add_development_dependency 'mocha'
+  s.add_development_dependency 'timecop'
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
@@ -63,6 +67,7 @@ send plugin data to New RElic from non-application sources.
     test/fixtures/valid_payload.json
     test/manual_test.rb
     test/new_relic_message_test.rb
+    test/processors/epoch_counter_test.rb
     test/test_helper.rb
   ]
   # = MANIFEST =

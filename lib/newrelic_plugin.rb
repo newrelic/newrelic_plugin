@@ -12,7 +12,7 @@ require "newrelic_plugin/processors/rate_processor" # port needed
 
 module NewRelic
   module Plugin
-    VERSION = "0.2.11"
+    VERSION = "0.2.12"
   end
   module Processor
   end
