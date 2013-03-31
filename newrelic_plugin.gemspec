@@ -1,7 +1,7 @@
 lib = File.expand_path('../lib', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'newrelic_plugin/version'
+require 'newrelic_plugin'
 
 Gem::Specification.new do |s|
   s.specification_version = 2 if s.respond_to? :specification_version=
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   ## Leave these as is they will be modified for you by the rake gemspec task.
   s.name          = 'newrelic_plugin'
   s.version       = NewRelic::Plugin::VERSION
-  s.date              = '2013-03-29'
+  s.date              = '2013-03-31'
   s.rubyforge_project = 'newrelic_plugin'
 
   ## Edit these as appropriate
