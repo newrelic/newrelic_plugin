@@ -151,10 +151,10 @@ module NewRelic
 
           #
           # Collect Data
-          data_collector = DataCollector.new(self, poll_interval)
+          self.data_collector = DataCollector.new(self, poll_interval)
           poll_cycle
           cnt = data_collector.process
-          data_collector = nil
+          self.data_collector = nil
 
           #
           # End of cycle work, if any
