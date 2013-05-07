@@ -7,7 +7,7 @@ class NewRelicMessageTest < Test::Unit::TestCase
 
   context 'initialization' do
     should 'start with an empty metrics array' do
-      assert_equal [], @new_relic_message.instance_variable_get(:@metrics)
+      assert_equal [], @new_relic_message.send(:metrics)
     end
   end
 
@@ -44,6 +44,28 @@ class NewRelicMessageTest < Test::Unit::TestCase
         'other metric' => [2,2,2,2,8]
       }
       assert_equal metric_hash, @new_relic_message.send(:build_metrics_hash)
+    end
+  end
+  
+  context :aggregate_metrics do 
+    setup do
+      @new_relic_message.add_stat_fullname 'metric', 1, 4, :min => 4, :max => 4, :sum_of_squares => 16
+      @new_relic_message.add_stat_fullname 'metric', 1, 2, :min => 2, :max => 2, :sum_of_squares => 4
+      @new_relic_message.add_stat_fullname 'metric', 2, 4, :min => 1, :max => 3, :sum_of_squares => 10
+    end
+
+    should 'aggregate into one metric' do
+      metrics = @new_relic_message.send(:metrics)
+      assert_equal 1, metrics.length
+      metric_hash = {
+        :metric_name => 'metric',
+        :count => 4,
+        :total => 10,
+        :min => 1,
+        :max => 4,
+        :sum_of_squares => 30
+      }
+      assert_equal metric_hash, metrics[0]
     end
   end
 

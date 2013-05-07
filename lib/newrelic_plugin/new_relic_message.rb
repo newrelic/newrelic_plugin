@@ -37,23 +37,34 @@ module NewRelic
         @component_guid = component_guid
         @component_version = component_version
         @duration_in_seconds = duration_in_seconds
-        @metrics = [] # Metrics being saved
+        @metrics_to_send = {} 
       end
+
       def add_stat_fullname metric_name,count,value,opts={}
-        entry = {}
-        entry[:metric_name] = metric_name
-        entry[:count] = count
-        entry[:total] = value
-        [:min,:max,:sum_of_squares].each do |key|
-          entry[key] = opts[key]
+        entry = @metrics_to_send[metric_name]
+        if entry.nil?
+          entry = {
+            :metric_name => metric_name,
+            :count => count,
+            :total => value
+          }
+          [:min,:max,:sum_of_squares].each do |key|
+            entry[key] = opts[key]
+          end
+          @metrics_to_send[metric_name] = entry
+        else 
+          entry[:count] += count
+          entry[:total] += value
+          entry[:min] = [entry[:min], opts[:min]].compact.min
+          entry[:max] = [entry[:max], opts[:max]].compact.max
+          entry[:sum_of_squares] += opts[:sum_of_squares] if opts[:sum_of_squares]
         end
-        @metrics << entry
       end
 
       def metrics
-        @metrics
+        @metrics_to_send.values
       end
-
+      
       def send_metrics
         return_errors = []
         puts "Metrics for #{@component_name}[#{@component_guid}] for last #{@duration_in_seconds} seconds:" if new_relic_connection.log_metrics?
