@@ -124,7 +124,7 @@ module NewRelic
           end
         elsif response && response.status == 403 && response.body == "DISABLE_NEW_RELIC"
           puts "Agent has been disabled remotely by New Relic"
-          exit
+          abort "Agent has been disabled remotely by New Relic"
         else
           begin
             if response.body.size>0
