@@ -142,7 +142,13 @@ module NewRelic
           end
         end
         if return_status
-          puts "  ****ERROR: #{return_status}" if new_relic_connection.log_metrics?
+          if response and response.status == 503 and !new_relic_connection.log_metrics?
+            # If logging not enabled, and it's a 503...be less error-ish...
+            puts "  Collector temporarily unavailable...continuing"
+          else
+            # Otherwise, in all cases (logging enabled or not) print an error message
+            puts "  ****ERROR: #{return_status}"
+          end
         end
       end 
 
