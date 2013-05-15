@@ -101,7 +101,7 @@ module NewRelic
       def deliver_metrics
         begin
           response = new_relic_connection.connect.post do |req|
-            req.url "/platform/v1/metrics"
+            req.url new_relic_connection.uri
             req.headers['Content-Type'] = 'application/json'
             req.body = build_request_payload
           end
