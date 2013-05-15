@@ -37,6 +37,9 @@ module NewRelic
         port = @config["port"]||80
         "http://#{host}:#{port}"
       end
+      def uri
+        @config["uri"] || "/platform/v1/metrics"
+      end
       class AuthenticationMiddleware < Faraday::Middleware
         def initialize(app,apikey)
           super(app)
