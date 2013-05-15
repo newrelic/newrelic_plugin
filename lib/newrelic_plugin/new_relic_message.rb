@@ -122,6 +122,9 @@ module NewRelic
           if last_result["status"] != "ok"
             return_status = "FAILED[#{response.status}] <#{new_relic_connection.url}>: #{last_result["error"]}"
           end
+        elsif response && response.status == 403 && response.body == "DISABLE_NEW_RELIC"
+          puts "Agent has been disabled remotely by New Relic"
+          abort "Agent has been disabled remotely by New Relic"
         else
           begin
             if response.body.size>0
