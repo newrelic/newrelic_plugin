@@ -1,4 +1,4 @@
-= New Relic Platform Agent SDK
+# New Relic Platform Agent SDK
 
 *CONFIDENTIAL* - All contents of this repository are CONFIDENTIAL
 per the terms of agreement between your organization and New
@@ -6,13 +6,13 @@ Relic. Additionally, the code you develop based on the contents of
 this repository is also confidential and should not be shared outside
 your firm.
 
-== Requirements
+## Requirements
 
 * Tested with Ruby 1.8.7 and 1.9.3
 * New Relic account on rpm.newrelic.com, with early access enabled 
   (contact cooper@newrelic.com to set up early access)
 
-== Get Started
+## Get Started
 
 This repo represents the core Ruby gem used to build plugin agents for
 the New Relic platform. If you are
@@ -22,7 +22,7 @@ getting started documentation[http://newrelic.com/docs/platform/plugin-developme
 Until this gem is published in rubygems.org, you will need to use this
 gem by adding it to your bundler[http://gembundler.com] Gemfile like this:
 
-    gem "newrelic_plugin", :git => "git@github.com:newrelic-platform/newrelic_plugin.git"
+    gem "newrelic_plugin", :git => "git@github.com:newrelic-platform/newrelic_plugin.git", :branch => 'release'
 
 Alternatively you can build and install the gem locally:
 
@@ -31,10 +31,18 @@ Alternatively you can build and install the gem locally:
     rake build
     gem install pkg/newrelic_plugin*
 
-== Questions? Comments?
+## Support
 
-Please use the 
-Issues[https://github.com/newrelic-platform/newrelic_plugin_development/issues] feature of the
-newrelic_plugin_development[https://github.com/newrelic-platform/newrelic_plugin_development]
-repository to report issues, ask questions, make suggestions, etc.
+Reach out to us at
+[support.newrelic.com](http://support.newrelic.com/).
+There you'll find documentation, FAQs, and forums where you can submit
+suggestions and discuss with staff and other users.
 
+Also available is community support on IRC: we generally use #newrelic
+on irc.freenode.net
+
+Find a bug?  E-mail support@newrelic.com, or post it to
+
+[support.newrelic.com](http://support.newrelic.com/).
+
+Thank you!
