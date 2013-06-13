@@ -34,8 +34,8 @@ module NewRelic
       end
       def url
         host = @config["host"]||"platform-api.newrelic.com"
-        port = @config["port"]||80
-        "http://#{host}:#{port}"
+        port = @config["port"]||443
+        "https://#{host}:#{port}"
       end
       def uri
         @config["uri"] || "/platform/v1/metrics"
