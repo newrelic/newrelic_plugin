@@ -25,7 +25,7 @@ module NewRelic
       # Create HTTP tunnel to New Relic
       #
       def connect
-        @connect ||= Faraday.new(:url => url) do |builder|
+        @connect ||= Faraday.new(:url => url, :ssl => { :verify => ssl_host_verification } ) do |builder|
           builder.request  :url_encoded
           builder.response :logger if @config["log_http"].to_i>0
           builder.use AuthenticationMiddleware,license_key
@@ -37,6 +37,11 @@ module NewRelic
       end
       def uri
         @config["uri"] || "/platform/v1/metrics"
+      end
+      def ssl_host_verification
+        ssl_host_verification = @config["ssl_host_verification"]
+        return true if ssl_host_verification.nil?
+        !!ssl_host_verification
       end
       class AuthenticationMiddleware < Faraday::Middleware
         def initialize(app,apikey)
