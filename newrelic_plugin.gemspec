@@ -23,8 +23,8 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
 
   s.rdoc_options = ["--charset=UTF-8",
-                    "--main", "README.rdoc"]
-  s.extra_rdoc_files = %w[README.rdoc LICENSE]
+                    "--main", "README.md"]
+  s.extra_rdoc_files = %w[README.md LICENSE]
 
   s.add_dependency 'faraday', '>= 0.8.1'
   s.add_dependency 'json'
