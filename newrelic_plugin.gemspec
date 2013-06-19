@@ -9,7 +9,6 @@ Gem::Specification.new do |s|
   ## Leave these as is they will be modified for you by the rake gemspec task.
   s.name          = 'newrelic_plugin'
   s.version       = NewRelic::Plugin::VERSION
-  s.date              = '2013-02-13'
   s.rubyforge_project = 'newrelic_plugin'
 
   ## Edit these as appropriate
