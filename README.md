@@ -13,11 +13,11 @@ the New Relic platform. If you are looking to build or use a platform
 component, please refer to the
 [getting started documentation](http://newrelic.com/docs/platform/plugin-development).
 
-Until this gem is published in rubygems.org, you will need to use this
-gem by adding it to your [bundler](http://gembundler.com/) Gemfile like this:
+Install this gem by running `gem install newrelic_plugin` or add it to your
+[bundler](http://gembundler.com/) Gemfile like this:
 
 ```ruby
-gem "newrelic_plugin", :git => "git@github.com:newrelic-platform/newrelic_plugin.git", :branch => "release"
+gem "newrelic_plugin"
 ```
 
 Alternatively you can build and install the gem locally:
