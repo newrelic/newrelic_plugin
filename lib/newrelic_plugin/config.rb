@@ -25,7 +25,7 @@ module NewRelic
       # directly, rather the global method +config+ should be referenced instead.
       def initialize
         @options = YAML::load(Config.config_yaml) if Config.config_yaml
-        @options = YAML.load_file(ERB.new(File.read(Config.config_file), 0, '<>').result) unless @options
+        @options = YAML::load(ERB.new(File.read(Config.config_file), 0, '<>').result) unless @options
       end
 
       #
