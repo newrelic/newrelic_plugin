@@ -1,4 +1,5 @@
 require 'yaml'
+require 'erb'
 module NewRelic
   module Plugin
 #
@@ -24,7 +25,7 @@ module NewRelic
       # directly, rather the global method +config+ should be referenced instead.
       def initialize
         @options = YAML::load(Config.config_yaml) if Config.config_yaml
-        @options = YAML.load_file(Config.config_file) unless @options
+        @options = YAML.load_file(ERB.new(File.read(Config.config_file), 0, '<>')) unless @options
       end
 
       #
