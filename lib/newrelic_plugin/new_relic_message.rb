@@ -144,23 +144,23 @@ module NewRelic
         if return_status
           if response and response.status == 503 and !new_relic_connection.log_metrics?
             # If logging not enabled, and it's a 503...be less error-ish...
-            puts "  Collector temporarily unavailable...continuing"
+            Logger.write "  Collector temporarily unavailable...continuing"
           else
             # Otherwise, in all cases (logging enabled or not) print an error message
-            puts "  ****ERROR: #{return_status}"
+            Logger.write "  ****ERROR: #{return_status}"
           end
         end
       end 
 
       def log_send_metrics
         if new_relic_connection.log_metrics?
-          puts "  Sent #{metrics.size} metrics to New Relic [#{new_relic_connection.url}]:"
+          Logger.write "  Sent #{metrics.size} metrics to New Relic [#{new_relic_connection.url}]:"
           metrics.each do |metric|
             val_strs = []
             [:count,:total,:min,:max,:sum_of_squares].each do |key|
               val_strs << "#{key}: #{metric[key]}" if metric[key]
             end
-            puts "    #{metric[:metric_name]}: #{val_strs.join(', ')}"
+            Logger.write "    #{metric[:metric_name]}: #{val_strs.join(', ')}"
           end
         end
       end
