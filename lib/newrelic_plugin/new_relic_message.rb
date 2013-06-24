@@ -56,7 +56,7 @@ module NewRelic
 
       def send_metrics
         return_errors = []
-        puts "Metrics for #{@component_name}[#{@component_guid}] for last #{@duration_in_seconds} seconds:" if new_relic_connection.log_metrics?
+        Logger.write "Metrics for #{@component_name}[#{@component_guid}] for last #{@duration_in_seconds} seconds:" if new_relic_connection.log_metrics?
         #
         # Send all metrics in a single transaction
         #
@@ -78,7 +78,7 @@ module NewRelic
         end
         return metrics_hash
       end
-      
+
       def build_request_payload
         data = {
           "agent" => {
@@ -92,7 +92,7 @@ module NewRelic
                 "guid" => @component_guid,
                 "duration" => @duration_in_seconds,
                 "metrics" => build_metrics_hash
-              } 
+              }
           ]
         }
         return data.to_json
@@ -106,7 +106,7 @@ module NewRelic
             req.body = build_request_payload
           end
         rescue => err
-          puts "HTTP Connection Error: #{err.inspect} #{err.message}"
+          Logger.write "HTTP Connection Error: #{err.inspect} #{err.message}"
         end
 
         return response
@@ -123,7 +123,7 @@ module NewRelic
             return_status = "FAILED[#{response.status}] <#{new_relic_connection.url}>: #{last_result["error"]}"
           end
         elsif response && response.status == 403 && response.body == "DISABLE_NEW_RELIC"
-          puts "Agent has been disabled remotely by New Relic"
+          Logger.write "Agent has been disabled remotely by New Relic"
           abort "Agent has been disabled remotely by New Relic"
         else
           begin
@@ -144,23 +144,23 @@ module NewRelic
         if return_status
           if response and response.status == 503 and !new_relic_connection.log_metrics?
             # If logging not enabled, and it's a 503...be less error-ish...
-            puts "  Collector temporarily unavailable...continuing"
+            Logger.write "  Collector temporarily unavailable...continuing"
           else
             # Otherwise, in all cases (logging enabled or not) print an error message
-            puts "  ****ERROR: #{return_status}"
+            Logger.write "  ****ERROR: #{return_status}"
           end
         end
-      end 
+      end
 
       def log_send_metrics
         if new_relic_connection.log_metrics?
-          puts "  Sent #{metrics.size} metrics to New Relic [#{new_relic_connection.url}]:"
+          Logger.write "  Sent #{metrics.size} metrics to New Relic [#{new_relic_connection.url}]:"
           metrics.each do |metric|
             val_strs = []
             [:count,:total,:min,:max,:sum_of_squares].each do |key|
               val_strs << "#{key}: #{metric[key]}" if metric[key]
             end
-            puts "    #{metric[:metric_name]}: #{val_strs.join(', ')}"
+            Logger.write "    #{metric[:metric_name]}: #{val_strs.join(', ')}"
           end
         end
       end
