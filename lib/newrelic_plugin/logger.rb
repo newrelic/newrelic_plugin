@@ -4,7 +4,11 @@ module NewRelic
 
     class Logger
       def self.write(message)
-        puts "[#{Logger.timestamp}] #{message}"
+        Logger.output "[#{Logger.timestamp}] #{message}"
+      end
+
+      def self.output(message)
+        puts message
       end
 
       def self.timestamp
