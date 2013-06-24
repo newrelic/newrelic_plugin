@@ -78,7 +78,7 @@ module NewRelic
         end
         return metrics_hash
       end
-      
+
       def build_request_payload
         data = {
           "agent" => {
@@ -92,7 +92,7 @@ module NewRelic
                 "guid" => @component_guid,
                 "duration" => @duration_in_seconds,
                 "metrics" => build_metrics_hash
-              } 
+              }
           ]
         }
         return data.to_json
@@ -150,7 +150,7 @@ module NewRelic
             Logger.write "  ****ERROR: #{return_status}"
           end
         end
-      end 
+      end
 
       def log_send_metrics
         if new_relic_connection.log_metrics?
