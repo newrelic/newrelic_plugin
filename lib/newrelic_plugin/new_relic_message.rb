@@ -56,7 +56,7 @@ module NewRelic
 
       def send_metrics
         return_errors = []
-        puts "Metrics for #{@component_name}[#{@component_guid}] for last #{@duration_in_seconds} seconds:" if new_relic_connection.log_metrics?
+        Logger.write "Metrics for #{@component_name}[#{@component_guid}] for last #{@duration_in_seconds} seconds:" if new_relic_connection.log_metrics?
         #
         # Send all metrics in a single transaction
         #
@@ -106,7 +106,7 @@ module NewRelic
             req.body = build_request_payload
           end
         rescue => err
-          puts "HTTP Connection Error: #{err.inspect} #{err.message}"
+          Logger.write "HTTP Connection Error: #{err.inspect} #{err.message}"
         end
 
         return response
@@ -123,7 +123,7 @@ module NewRelic
             return_status = "FAILED[#{response.status}] <#{new_relic_connection.url}>: #{last_result["error"]}"
           end
         elsif response && response.status == 403 && response.body == "DISABLE_NEW_RELIC"
-          puts "Agent has been disabled remotely by New Relic"
+          Logger.write "Agent has been disabled remotely by New Relic"
           abort "Agent has been disabled remotely by New Relic"
         else
           begin
