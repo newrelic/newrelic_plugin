@@ -13,8 +13,8 @@ class LoggerTest < Test::Unit::TestCase
   context 'self.timestamp' do
     should 'format timestamp in iso8601' do
       test_time = Time.new(2013, 6, 24, 0, 0, 0, "+00:00")
-      Time.expects(:now).returns(test_time)
-      assert_equal '2013-06-24T00:00:00Z', NewRelic::Plugin::Logger.timestamp
+      Time.expects(:now).twice.returns(test_time)
+      assert_equal '2013-06-24 00:00:00 UTC', NewRelic::Plugin::Logger.timestamp
     end
   end
 

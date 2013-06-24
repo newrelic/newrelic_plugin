@@ -12,7 +12,7 @@ module NewRelic
       end
 
       def self.timestamp
-        Time.now.utc.iso8601
+        Time.iso8601(Time.now.utc.iso8601).to_s
       end
     end
   end
