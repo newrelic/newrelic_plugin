@@ -5,6 +5,11 @@
 **Features**
 
 * To fill in
+### v1.0.3 - June 25, 2013 ###
+
+**Features**
+
+* Added timestamps to output to improve debugging experience.
 
 ### v1.0.2 - June 19, 2013 ###
 
@@ -23,3 +28,4 @@
 **Features**
 
 * Initial public release version of the New Relic Platform Ruby SDK
+
