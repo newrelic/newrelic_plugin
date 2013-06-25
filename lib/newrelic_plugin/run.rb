@@ -19,11 +19,11 @@ module NewRelic
       def initialize
         @poll_cycle = (NewRelic::Plugin::Config.config.newrelic["poll"] || 60).to_i
         @poll_cycle = 60 if (@poll_cycle <= 0) or (@poll_cycle >= 600)
-        puts "WARNING: Poll cycle differs from 60 seconds (current is #{@poll_cycle})" if @poll_cycle!=60
+        Logger.write "WARNING: Poll cycle differs from 60 seconds (current is #{@poll_cycle})" if @poll_cycle!=60
       end
       def installed_agents
         if Setup.installed_agents.size==0
-          puts "No agents installed!"
+          Logger.write "No agents installed!"
           raise NoAgents, "No agents installed"
         end
         Setup.installed_agents
@@ -71,12 +71,12 @@ module NewRelic
         if configured_agents.size==0
           err_msg = "No agents configured!"
           err_msg+= " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
-          puts err_msg
+          Logger.write err_msg
           raise NoAgents, err_msg
         end
         installed_agents.each do |agent_id,installed_agent|
           version = installed_agent[:agent_class].version
-          puts "Agent #{installed_agent[:label]} is at version #{version}" if version
+          Logger.write "Agent #{installed_agent[:label]} is at version #{version}" if version
         end
         configured_agents.each do |agent|
           agent.startup if agent.respond_to? :startup
@@ -94,22 +94,22 @@ module NewRelic
               begin
                 cnt+=agent.run @poll_cycle
               rescue => err
-                puts "Error occurred in poll cycle: #{err}"
+                Logger.write "Error occurred in poll cycle: #{err}"
               end
             end
-            puts "Gathered #{cnt} statistics"
+            Logger.write "Gathered #{cnt} statistics"
             #
             # Delay until next run
             secs_to_delay=@poll_cycle-(Time.now-@last_run_time)
             sleep secs_to_delay if secs_to_delay>0
           end
         rescue Interrupt =>err
-          puts "Shutting down..."
+          Logger.write "Shutting down..."
         end
         configured_agents.each do |agent|
           agent.shutdown if agent.respond_to? :shutdown
         end
-        puts "Shutdown complete"
+        Logger.write "Shutdown complete"
       end
       #private
       def agent_setup
