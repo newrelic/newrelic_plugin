@@ -19,17 +19,10 @@ module NewRelic
               :ident => ident
           }
         end
-        #def install_processor klass
-        #  @installed_processors||={}
-        #  tmp_instance=klass.new
-        #  @installed_processors[tmp_instance.ident]={ident: tmp_instance.ident,processor_class: klass,label: tmp_instance.label}
-        #end
+
         def installed_agents
           @installed_agents||{}
         end
-        #def installed_processors
-        #  @installed_processors||{}
-        #end
       end
     end
 
