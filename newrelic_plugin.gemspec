@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'faraday', '>= 0.8.1'
   s.add_dependency 'json'
+  s.add_dependency 'newrelic_platform_binding'
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
