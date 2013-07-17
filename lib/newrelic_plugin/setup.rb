@@ -34,10 +34,10 @@ module NewRelic
       def initialize
         @agents=[]
       end
-      def create_agent ident,name,options=nil,&block
-        agent_info=Setup.installed_agents[ident]
+      def create_agent context, ident, options=nil, &block
+        agent_info = Setup.installed_agents[ident]
         raise UnknownInstalledAgent,"Unrecognized agent '#{ident}'" unless agent_info
-        agent=agent_info[:agent_class].new name,agent_info,options
+        agent = agent_info[:agent_class].new context, agent_info, options
         raise CouldNotInitializeAgent unless agent
         block.call(agent) if block_given?
         @agents<<agent

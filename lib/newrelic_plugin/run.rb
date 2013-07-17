@@ -10,17 +10,26 @@ module NewRelic
       #
       # Primary Driver entry point
       #
-      def self.setup_and_run component_type_filter=nil
-        run=new
+      def self.setup_and_run component_type_filter = nil
+        run = new
         run.setup_from_config component_type_filter
         run.setup_no_config_agents
         run.loop_forever
       end
       def initialize
-        @poll_cycle = (NewRelic::Plugin::Config.config.newrelic["poll"] || 60).to_i
+        config = NewRelic::Plugin::Config.config
+        @context = NewRelic::Binding::Context.new(
+          NewRelic::Plugin::VERSION,
+          'localhost', #intended to be the name of the host running the agent
+          1, #intended to be the PID of the agent process
+          config.newrelic['license_key'],
+        )
+        NewRelic::Binding::Config.endpoint = config.newrelic['endpoint'] if config.newrelic['endpoint']
+        @poll_cycle = (config.newrelic["poll"] || 60).to_i
         @poll_cycle = 60 if (@poll_cycle <= 0) or (@poll_cycle >= 600)
         Logger.write "WARNING: Poll cycle differs from 60 seconds (current is #{@poll_cycle})" if @poll_cycle!=60
       end
+
       def installed_agents
         if Setup.installed_agents.size==0
           Logger.write "No agents installed!"
@@ -28,12 +37,11 @@ module NewRelic
         end
         Setup.installed_agents
       end
-      #def installed_processors
-      #  Setup.installed_processors
-      #end
+
       def configured_agents
         agent_setup.agents
       end
+
       def setup_from_config component_type_filter=nil
         return unless NewRelic::Plugin::Config.config.agents
         installed_agents.each do |agent_id,installed_agent|
@@ -44,8 +52,7 @@ module NewRelic
             next unless config
             # Convert keys to symbols...
             config.keys.each {|key|config[(key.to_sym rescue key) || key] = config.delete(key)}
-            name=config.delete(:name) # Pull out name and remove from hash
-            agent_setup.create_agent agent_id,name,config
+            agent_setup.create_agent @context, agent_id, config
           end
         end
       end
@@ -89,15 +96,16 @@ module NewRelic
             @last_run_time=Time.now
             #
             # Call each agent
-            cnt=0
+            request = @context.new_request()
             configured_agents.each do |agent|
               begin
-                cnt+=agent.run @poll_cycle
+                agent.run @poll_cycle, request
               rescue => err
                 Logger.write "Error occurred in poll cycle: #{err}"
               end
             end
-            Logger.write "Gathered #{cnt} statistics"
+            request.deliver
+            Logger.write "Gathered #{request.metric_count} statistics from #{request.component_count} components"
             #
             # Delay until next run
             secs_to_delay=@poll_cycle-(Time.now-@last_run_time)
