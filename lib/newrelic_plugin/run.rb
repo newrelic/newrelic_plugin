@@ -21,8 +21,8 @@ module NewRelic
         @context = NewRelic::Binding::Context.new(
           NewRelic::Plugin::VERSION,
           'localhost', #intended to be the name of the host running the agent
-          1, #intended to be the PID of the agent process
-          config.newrelic['license_key'],
+          0, #intended to be the PID of the agent process
+          config.newrelic['license_key']
         )
         NewRelic::Binding::Config.endpoint = config.newrelic['endpoint'] if config.newrelic['endpoint']
         @poll_cycle = (config.newrelic["poll"] || 60).to_i
