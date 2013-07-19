@@ -69,19 +69,15 @@ module NewRelic
         #
         # Instance Info
         #
-        attr_reader :name,:agent_info
+        attr_reader :name
         def guid
           return @guid if @guid
-          @guid=self.class.guid
+          @guid = self.class.guid
           #
           # Verify GUID is set correctly...
           #
-          if @guid=="guid" or @guid=="_TYPE_YOUR_GUID_HERE_"
-            #this feels tightly coupled to the config class, testing this is difficult, thinking about refactoring (NH)
-            @guid = NewRelic::Plugin::Config.config.newrelic['guids'][agent_info[:ident].to_s] if NewRelic::Plugin::Config.config.newrelic['guids']
-            Logger.write "NOTE: GUID updated for #{instance_label} at run-time to '#{@guid}'"
-          end
-          raise "Did not set GUID" if @guid.nil? or @guid=="" or @guid=="guid" or @guid=="_TYPE_YOUR_GUID_HERE_"
+          invalid_guids = ["", "guid", "_TYPE_YOUR_GUID_HERE_"]
+          raise "Did not set GUID" if @guid.nil? or invalid_guids.include?(@guid)
           @guid
         end
         def version
@@ -92,10 +88,8 @@ module NewRelic
         end
         #
         # Instantiate a newrelic_plugin instance
-        def initialize context, agent_info, options = {}
+        def initialize context, options = {}
           @context = context
-          @agent_info = agent_info
-          @ident = agent_info[:ident]
           @options = options
           if self.class.config_options_list
             self.class.config_options_list.each do |config|
@@ -134,7 +128,7 @@ module NewRelic
         # Execute a poll cycle
         #
         #
-        def run(poll_interval, request)
+        def run(request)
           @request = request
           #
           # Start of cycle work, if any

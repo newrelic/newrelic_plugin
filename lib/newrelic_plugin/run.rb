@@ -3,9 +3,6 @@ module NewRelic
 #
 # Run class. Provides entry points and polling initiation support.
 #
-# Author:: Lee Atchison <lee@newrelic.com>
-# Copyright:: Copyright (c) 2012 New Relic, Inc.
-#
     class Run
       #
       # Primary Driver entry point
@@ -14,7 +11,9 @@ module NewRelic
         run = new
         run.setup_from_config component_type_filter
         run.setup_no_config_agents
+        run.agent_startup
         run.loop_forever
+        run.agent_shutdown
       end
       def initialize
         config = NewRelic::Plugin::Config.config
@@ -69,15 +68,11 @@ module NewRelic
       def setup &block
         block.call(agent_setup)
       end
-      #
-      # Call this method to loop forever. This will delay an appropriate amount until
-      # the next metric pull is needed, then it will loop thru all configured agents
-      # and call each one in turn so it can perform it's appropriate metric pull.
-      #
-      def loop_forever
-        if configured_agents.size==0
+
+      def agent_startup
+        if configured_agents.size == 0
           err_msg = "No agents configured!"
-          err_msg+= " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
+          err_msg += " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
           Logger.write err_msg
           raise NoAgents, err_msg
         end
@@ -88,18 +83,27 @@ module NewRelic
         configured_agents.each do |agent|
           agent.startup if agent.respond_to? :startup
         end
-        @done=false
+      end
+
+      #
+      # Call this method to loop forever. This will delay an appropriate amount until
+      # the next metric pull is needed, then it will loop thru all configured agents
+      # and call each one in turn so it can perform it's appropriate metric pull.
+      #
+
+      def loop_forever
+        @done = false
         begin
           while !@done
             #
             # Set last run time
-            @last_run_time=Time.now
+            @last_run_time = Time.now
             #
             # Call each agent
             request = @context.new_request()
             configured_agents.each do |agent|
               begin
-                agent.run @poll_cycle, request
+                agent.run(request)
               rescue => err
                 Logger.write "Error occurred in poll cycle: #{err}"
               end
@@ -108,18 +112,21 @@ module NewRelic
             Logger.write "Gathered #{request.metric_count} statistics from #{request.component_count} components"
             #
             # Delay until next run
-            secs_to_delay=@poll_cycle-(Time.now-@last_run_time)
-            sleep secs_to_delay if secs_to_delay>0
+            seconds_to_delay = @poll_cycle - (Time.now - @last_run_time)
+            sleep(seconds_to_delay) if seconds_to_delay > 0
           end
-        rescue Interrupt =>err
+        rescue Interrupt => err
           Logger.write "Shutting down..."
         end
+      end
+
+      def agent_shutdown
         configured_agents.each do |agent|
           agent.shutdown if agent.respond_to? :shutdown
         end
         Logger.write "Shutdown complete"
       end
-      #private
+
       def agent_setup
         @agent_setup||=AgentSetup.new
       end
