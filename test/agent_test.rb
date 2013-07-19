@@ -2,9 +2,9 @@ require 'test_helper'
 
 class AgentTest < Test::Unit::TestCase
 
-  def setup 
-    @agent_info = {:ident => 1}
+  def setup
     @agent_class = TestingAgent::Agent.dup
+    @context = NewRelic::Binding::Context.new('1.0.0', 'localhost', '0', 'license_key')
   end
 
   context :agent_guid do
@@ -12,7 +12,7 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         agent_guid '12234'
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal '12234', agent.class.guid
     end
 
@@ -35,7 +35,7 @@ class AgentTest < Test::Unit::TestCase
 
   context :guid do
     should "return instance @guid" do
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       agent.instance_variable_set(:@guid, 'test')
       assert_equal 'test', agent.guid
     end
@@ -44,15 +44,15 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         @guid = '123'
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal '123', agent.guid
-    end 
+    end
 
     should "raise error if guid is not set properly" do
       @agent_class.class_eval do
         @guid = 'guid'
       end
-      #agent = TestingAgent::Agent.new('test agent', @agent_info)
+      #agent = TestingAgent::Agent.new(@context)
       # refactor the code this is hitting before finishing this test
       # this does not test well
       #assert_raise RuntimeError, 'Did not set GUID' do
@@ -66,7 +66,7 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         agent_version '0.0.1'
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal '0.0.1', agent.class.version
     end
   end
@@ -76,7 +76,7 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         @version = '1.2.3'
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal '1.2.3', agent.version
     end
   end
@@ -86,7 +86,7 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         agent_human_labels('Testing Agent') { 'Testing Agent block' }
       end
-      @agent = @agent_class.new('test agent', @agent_info)
+      @agent = @agent_class.new(@context)
     end
     should 'set class @label' do
       assert_equal 'Testing Agent', @agent.class.label
@@ -101,7 +101,7 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         agent_human_labels('Testing Agent') { 'Testing Agent block' }
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal true, agent.class.no_config_required
     end
   end
@@ -111,20 +111,20 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         @no_config_required = true
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal false, agent.class.config_required?
     end
     should 'return true when class @no_config_required false' do
       @agent_class.class_eval do
         @no_config_required = false
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal true, agent.class.config_required?
     end
     should 'return true when class @no_config_required is not set' do
       @agent_class.class_eval do
       end
-      agent = @agent_class.new('test agent', @agent_info)
+      agent = @agent_class.new(@context)
       assert_equal true, agent.class.config_required?
     end
   end
@@ -134,8 +134,8 @@ class AgentTest < Test::Unit::TestCase
       @agent_class.class_eval do
         agent_config_options(:test, 'foo', 'bar')
       end
-      @agent = @agent_class.new('test agent', @agent_info)
-      assert_equal [:test, 'foo', 'bar'], @agent.class.config_options_list  
+      @agent = @agent_class.new(@context)
+      assert_equal [:test, 'foo', 'bar'], @agent.class.config_options_list
     end
 
     should 'add to existing @config_options_list' do
@@ -144,9 +144,9 @@ class AgentTest < Test::Unit::TestCase
         @config_options_list = ['foobar']
         agent_config_options(:test, 'foo', 'bar')
       end
-  
-      @agent = @agent_class.new('test agent', @agent_info)
-      assert_equal ['foobar', :test, 'foo', 'bar'], @agent.class.config_options_list  
+
+      @agent = @agent_class.new(@context)
+      assert_equal ['foobar', :test, 'foo', 'bar'], @agent.class.config_options_list
     end
   end
 
