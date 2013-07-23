@@ -24,9 +24,15 @@ module NewRelic
           config.newrelic['license_key']
         )
         NewRelic::Binding::Config.endpoint = config.newrelic['endpoint'] if config.newrelic['endpoint']
-        @poll_cycle = (config.newrelic["poll"] || 60).to_i
-        @poll_cycle = 60 if (@poll_cycle <= 0) or (@poll_cycle >= 600)
-        Logger.write "WARNING: Poll cycle differs from 60 seconds (current is #{@poll_cycle})" if @poll_cycle!=60
+        @poll_cycle_period = (config.newrelic["poll"] || 60).to_i
+        if @poll_cycle_period <= 0
+          message = "A poll cycle period less than or equal to 0 is invalid"
+          Logger.write message
+          abort message
+        end
+        if @poll_cycle_period != 60
+          Logger.write "WARNING: Poll cycle period differs from 60 seconds (current is #{@poll_cycle_period})"
+        end
       end
 
       def installed_agents
@@ -112,7 +118,7 @@ module NewRelic
             Logger.write "Gathered #{request.metric_count} statistics from #{request.component_count} components"
             #
             # Delay until next run
-            seconds_to_delay = @poll_cycle - (Time.now - @last_run_time)
+            seconds_to_delay = @poll_cycle_period - (Time.now - @last_run_time)
             sleep(seconds_to_delay) if seconds_to_delay > 0
           end
         rescue Interrupt => err
