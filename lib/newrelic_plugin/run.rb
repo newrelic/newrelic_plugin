@@ -25,6 +25,7 @@ module NewRelic
         )
         NewRelic::Binding::Config.endpoint = config.newrelic['endpoint'] if config.newrelic['endpoint']
         @poll_cycle_period = (config.newrelic["poll"] || 60).to_i
+        NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
         if @poll_cycle_period <= 0
           message = "A poll cycle period less than or equal to 0 is invalid"
           Logger.write message
@@ -101,28 +102,27 @@ module NewRelic
         @done = false
         begin
           while !@done
-            #
-            # Set last run time
             @last_run_time = Time.now
-            #
-            # Call each agent
             request = @context.new_request()
-            configured_agents.each do |agent|
-              begin
-                agent.run(request)
-              rescue => err
-                Logger.write "Error occurred in poll cycle: #{err}"
-              end
-            end
+            process_agent_runs(request)
             request.deliver
             Logger.write "Gathered #{request.metric_count} statistics from #{request.component_count} components"
-            #
-            # Delay until next run
+
             seconds_to_delay = @poll_cycle_period - (Time.now - @last_run_time)
             sleep(seconds_to_delay) if seconds_to_delay > 0
           end
         rescue Interrupt => err
           Logger.write "Shutting down..."
+        end
+      end
+
+      def process_agent_runs(request)
+        configured_agents.each do |agent|
+          begin
+            agent.run(request)
+          rescue => err
+            Logger.write "Error occurred in poll cycle: #{err}"
+          end
         end
       end
 
