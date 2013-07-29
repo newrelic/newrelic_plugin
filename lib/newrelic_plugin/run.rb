@@ -89,10 +89,17 @@ module NewRelic
             @last_run_time=Time.now
             #
             # Call each agent
-            cnt=0
+            cnt = 0
+            threads = []
             configured_agents.each do |agent|
+              threads << Thread.new do
+                Thread.current[:cnt] = agent.run @poll_cycle
+              end
+            end
+            threads.each do |thread|
               begin
-                cnt+=agent.run @poll_cycle
+                thread.join
+                cnt += thread[:cnt]
               rescue => err
                 Logger.write "Error occurred in poll cycle: #{err}"
               end
