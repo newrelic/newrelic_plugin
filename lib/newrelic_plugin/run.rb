@@ -89,12 +89,29 @@ module NewRelic
             @last_run_time=Time.now
             #
             # Call each agent
-            cnt=0
-            configured_agents.each do |agent|
-              begin
-                cnt+=agent.run @poll_cycle
-              rescue => err
-                Logger.write "Error occurred in poll cycle: #{err}"
+            cnt = 0
+            if NewRelic::Plugin::Config.config.newrelic["threaded"]
+              threads = []
+              configured_agents.each do |agent|
+                threads << Thread.new do
+                  Thread.current[:cnt] = agent.run @poll_cycle
+                end
+              end
+              threads.each do |thread|
+                begin
+                  thread.join
+                  cnt += thread[:cnt]
+                rescue => err
+                  Logger.write "Error occurred in poll cycle: #{err}"
+                end
+              end
+            else
+              configured_agents.each do |agent|
+                begin
+                  cnt += agent.run @poll_cycle
+                rescue => err
+                  Logger.write "Error occurred in poll cycle: #{err}"
+                end
               end
             end
             Logger.write "Gathered #{cnt} statistics"
