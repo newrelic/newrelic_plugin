@@ -13,10 +13,10 @@ module NewRelic::Processor
   # This processor will be removed from the code base shortly...
   #
   #
-  class Rate<NewRelic::Plugin::Processor::Base
+  class Rate < NewRelic::Plugin::Processor::Base
     def initialize
-      Logger.write "OBSOLESCENCE WARNING: The 'Rate' processor is obsolete and should not be used."
-      Logger.write "OBSOLESCENCE WARNING: It will be completely removed in the near future."
+      Logger.warn("OBSOLESCENCE WARNING: The 'Rate' processor is obsolete and should not be used.")
+      Logger.warn("OBSOLESCENCE WARNING: It will be completely removed in the near future.")
       super :rate,"Rate"
     end
     def process val

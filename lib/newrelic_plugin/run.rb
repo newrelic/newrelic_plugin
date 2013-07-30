@@ -26,19 +26,22 @@ module NewRelic
         NewRelic::Binding::Config.endpoint = config.newrelic['endpoint'] if config.newrelic['endpoint']
         @poll_cycle_period = (config.newrelic["poll"] || 60).to_i
         NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
+        if NewRelic::Plugin::Config.config.newrelic["verbose"].to_i > 0
+          NewRelic::Logger.log_level = ::Logger::DEBUG
+        end
         if @poll_cycle_period <= 0
           message = "A poll cycle period less than or equal to 0 is invalid"
-          Logger.write message
+          Logger.fatal(message)
           abort message
         end
         if @poll_cycle_period != 60
-          Logger.write "WARNING: Poll cycle period differs from 60 seconds (current is #{@poll_cycle_period})"
+          Logger.warn("WARNING: Poll cycle period differs from 60 seconds (current is #{@poll_cycle_period})")
         end
       end
 
       def installed_agents
-        if Setup.installed_agents.size==0
-          Logger.write "No agents installed!"
+        if Setup.installed_agents.size == 0
+          Logger.error("No agents installed!")
           raise NoAgents, "No agents installed"
         end
         Setup.installed_agents
@@ -80,12 +83,12 @@ module NewRelic
         if configured_agents.size == 0
           err_msg = "No agents configured!"
           err_msg += " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
-          Logger.write err_msg
+          Logger.error(err_msg)
           raise NoAgents, err_msg
         end
         installed_agents.each do |agent_id,installed_agent|
           version = installed_agent[:agent_class].version
-          Logger.write "Agent #{installed_agent[:label]} is at version #{version}" if version
+          Logger.info("Agent #{installed_agent[:label]} is at version #{version}") if version
         end
         configured_agents.each do |agent|
           agent.startup if agent.respond_to? :startup
@@ -106,35 +109,37 @@ module NewRelic
             request = @context.new_request()
             process_agent_runs(request)
             request.deliver
-            Logger.write "Gathered #{request.metric_count} statistics from #{request.component_count} components"
+            Logger.info("Gathered #{request.metric_count} statistics from #{request.component_count} components")
 
             seconds_to_delay = @poll_cycle_period - (Time.now - @last_run_time)
             sleep(seconds_to_delay) if seconds_to_delay > 0
           end
         rescue Interrupt => err
-          Logger.write "Shutting down..."
+          Logger.info "Shutting down..."
         end
       end
 
       def process_agent_runs(request)
+        Logger.debug('Start collecting agent data for poll cycle')
         configured_agents.each do |agent|
           begin
             agent.run(request)
           rescue => err
-            Logger.write "Error occurred in poll cycle: #{err}"
+            Logger.error("Error occurred in poll cycle: #{err}")
           end
         end
+        Logger.debug('Finished collecting agent data for poll cycle')
       end
 
       def agent_shutdown
         configured_agents.each do |agent|
           agent.shutdown if agent.respond_to? :shutdown
         end
-        Logger.write "Shutdown complete"
+        Logger.info("Shutdown complete")
       end
 
       def agent_setup
-        @agent_setup||=AgentSetup.new
+        @agent_setup ||= AgentSetup.new
       end
     end
   end
