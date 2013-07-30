@@ -1,10 +1,11 @@
 require 'rubygems'
 require 'bundler'
 Bundler.setup
+require 'newrelic_platform_binding'
 require 'newrelic_plugin'
-require 'test/unit'
-require 'shoulda-context'
+require 'minitest/autorun'
 require 'mocha/setup'
+require 'pry'
 
 
 module TestingAgent
