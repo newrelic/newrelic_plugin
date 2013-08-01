@@ -25,11 +25,13 @@ module NewRelic
       # Create HTTP tunnel to New Relic
       #
       def connect
-        @connect ||= Faraday.new(:url => url, :ssl => { :verify => ssl_host_verification } ) do |builder|
+        conn_options = { :ssl => { :verify => ssl_host_verification } }
+        conn_options[:proxy] = proxy_settings if !proxy_host.nil?
+        @connect ||= Faraday.new(url, conn_options) do |builder|
           builder.request  :url_encoded
           builder.response :logger if @config["log_http"].to_i>0
           builder.use AuthenticationMiddleware,license_key
-          builder.adapter  :net_http
+          builder.adapter  :net_http 
         end
       end
       def url
@@ -61,7 +63,25 @@ module NewRelic
       def license_key
         @config["license_key"]
       end
-
+      def proxy_settings
+        proxy_settings = { :uri => "http://" + proxy_host } if !proxy_host.nil? && proxy_port.nil?
+        proxy_settings = { :uri => "http://" + proxy_host + ":" + proxy_port.to_s } if !proxy_host.nil? && !proxy_port.nil?
+        proxy_settings[:user] = proxy_user if !proxy_user.nil?
+        proxy_settings[:password] = proxy_pass if !proxy_pass.nil?
+      end
+      def proxy_host
+        @config["proxy_host"]
+      end
+      def proxy_port
+        @config["proxy_port"]
+      end
+      def proxy_user
+        @config["proxy_user"]
+      end
+      def proxy_pass
+        @config["proxy_pass"]
+      end
+      
     end
   end
 end
