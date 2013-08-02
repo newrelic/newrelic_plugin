@@ -10,10 +10,6 @@ module NewRelic
         @last_delivered_at = nil
       end
 
-      ##########################################################################
-      # Methods below are not intended to be used as part of the public API
-      ##########################################################################
-
       def key
         return (name + guid)
       end
