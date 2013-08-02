@@ -67,17 +67,21 @@ module NewRelic
             'name' => component.name,
             'guid' => component.guid,
             'duration' => component.duration,
-            'metrics' => build_metrics_hash(component.key)
+            'metrics' => build_metrics_hash(component)
           }
           components_array.push(component_hash)
         end
         return components_array
       end
 
-      def build_metrics_hash(key)
+      def build_metrics_hash(component)
         metrics_hash = {}
-        @metrics[key].each do |metric|
-          metrics_hash.merge!(metric.to_hash)
+        if @metrics.has_key?(component.key)
+          @metrics[component.key].each do |metric|
+            metrics_hash.merge!(metric.to_hash)
+          end
+        else
+          Logger.warn("Component with name \"#{component.name}\" and guid \"#{component.guid}\" had no metrics")
         end
         metrics_hash
       end

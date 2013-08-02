@@ -43,6 +43,11 @@ class RequestTest < Minitest::Test
     assert_equal example_hash, @request.send(:build_request_data_structure)
   end
 
+  def test_build_request_data_structure_when_component_has_no_metrics
+    metric_setup
+    ::NewRelic::Logger.expects(:warn).with("Component with name \"name\" and guid \"com.test\" had no metrics")
+    @request.send(:build_request_data_structure)
+  end
 
   def example_hash
     {
