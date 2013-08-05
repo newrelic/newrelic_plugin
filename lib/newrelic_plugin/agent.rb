@@ -69,19 +69,15 @@ module NewRelic
         #
         # Instance Info
         #
-        attr_reader :name,:agent_info
+        attr_reader :name
         def guid
           return @guid if @guid
-          @guid=self.class.guid
+          @guid = self.class.guid
           #
           # Verify GUID is set correctly...
           #
-          if @guid=="guid" or @guid=="_TYPE_YOUR_GUID_HERE_"
-            #this feels tightly coupled to the config class, testing this is difficult, thinking about refactoring (NH)
-            @guid = NewRelic::Plugin::Config.config.newrelic['guids'][agent_info[:ident].to_s] if NewRelic::Plugin::Config.config.newrelic['guids']
-            Logger.write "NOTE: GUID updated for #{instance_label} at run-time to '#{@guid}'"
-          end
-          raise "Did not set GUID" if @guid.nil? or @guid=="" or @guid=="guid" or @guid=="_TYPE_YOUR_GUID_HERE_"
+          invalid_guids = ["", "guid", "_TYPE_YOUR_GUID_HERE_"]
+          raise "Did not set GUID" if @guid.nil? or invalid_guids.include?(@guid)
           @guid
         end
         def version
@@ -92,22 +88,22 @@ module NewRelic
         end
         #
         # Instantiate a newrelic_plugin instance
-        def initialize name,agent_info,options={}
-          @name=name
-          @agent_info=agent_info
-          @ident=agent_info[:ident]
-          @options=options
+        def initialize context, options = {}
+          @context = context
+          @options = options
           if self.class.config_options_list
             self.class.config_options_list.each do |config|
               self.send("#{config}=",options[config])
             end
           end
-          @last_time=nil
+          @last_time = nil
 
           #
           # Run agent-specific metric setup, if necessary
           setup_metrics if respond_to? :setup_metrics
+          @component = @context.create_component(instance_label, guid)
         end
+
         def instance_label
           if !respond_to? :instance_label_proc_method
             mod=Module.new
@@ -122,9 +118,9 @@ module NewRelic
         # Setup & Report Metrics
         #
         #
-        def report_metric metric_name,units,value,opts={}
+        def report_metric(metric_name, units, value, opts = {} )
           return if value.nil?
-          @data_collector.add_data metric_name,units,value.to_f,opts
+          @request.add_metric(@component, "Component/#{metric_name}[#{units}]", value, opts)
         end
 
         #
@@ -132,22 +128,19 @@ module NewRelic
         # Execute a poll cycle
         #
         #
-        def run poll_interval
+        def run(request)
+          @request = request
           #
           # Start of cycle work, if any
           cycle_start if respond_to? :cycle_start
 
           #
           # Collect Data
-          @data_collector=DataCollector.new self,poll_interval
           poll_cycle
-          cnt=@data_collector.process
-          @data_collector=nil
 
           #
           # End of cycle work, if any
           cycle_end if respond_to? :cycle_end
-          cnt
         end
       end
     end

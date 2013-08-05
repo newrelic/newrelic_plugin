@@ -3,37 +3,68 @@ module NewRelic
 #
 # Run class. Provides entry points and polling initiation support.
 #
-# Author:: Lee Atchison <lee@newrelic.com>
-# Copyright:: Copyright (c) 2012 New Relic, Inc.
-#
     class Run
       #
       # Primary Driver entry point
       #
-      def self.setup_and_run component_type_filter=nil
-        run=new
+      def self.setup_and_run component_type_filter = nil
+        run = new
         run.setup_from_config component_type_filter
         run.setup_no_config_agents
+        run.agent_startup
         run.loop_forever
+        run.agent_shutdown
       end
       def initialize
-        @poll_cycle = (NewRelic::Plugin::Config.config.newrelic["poll"] || 60).to_i
-        @poll_cycle = 60 if (@poll_cycle <= 0) or (@poll_cycle >= 600)
-        Logger.write "WARNING: Poll cycle differs from 60 seconds (current is #{@poll_cycle})" if @poll_cycle!=60
+        @config = NewRelic::Plugin::Config.config
+        @context = NewRelic::Binding::Context.new(
+          NewRelic::Plugin::VERSION,
+          'localhost', #intended to be the name of the host running the agent
+          0, #intended to be the PID of the agent process
+          @config.newrelic['license_key']
+        )
+        configuration_and_logging
       end
+
+      def configuration_and_logging
+        if @config.newrelic["verbose"].to_i > 0
+          NewRelic::Logger.log_level = ::Logger::DEBUG
+        end
+
+        if @config.newrelic['endpoint']
+          NewRelic::Binding::Config.endpoint = @config.newrelic['endpoint']
+          Logger.info("Using alternate endpoint: #{NewRelic::Binding::Config.endpoint}")
+        end
+
+        if @config.newrelic['proxy']
+          NewRelic::Binding::Config.proxy = @config.newrelic['proxy']
+          Logger.info("Using a proxy: #{NewRelic::Binding::Config.proxy.inspect}")
+        end
+
+        @poll_cycle_period = (@config.newrelic["poll"] || 60).to_i
+        NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
+        if @poll_cycle_period <= 0
+          message = "A poll cycle period less than or equal to 0 is invalid"
+          Logger.fatal(message)
+          abort message
+        end
+        if @poll_cycle_period != 60
+          Logger.warn("WARNING: Poll cycle period differs from 60 seconds (current is #{@poll_cycle_period})")
+        end
+      end
+
       def installed_agents
-        if Setup.installed_agents.size==0
-          Logger.write "No agents installed!"
+        if Setup.installed_agents.size == 0
+          Logger.error("No agents installed!")
           raise NoAgents, "No agents installed"
         end
         Setup.installed_agents
       end
-      #def installed_processors
-      #  Setup.installed_processors
-      #end
+
       def configured_agents
         agent_setup.agents
       end
+
       def setup_from_config component_type_filter=nil
         return unless NewRelic::Plugin::Config.config.agents
         installed_agents.each do |agent_id,installed_agent|
@@ -44,8 +75,7 @@ module NewRelic
             next unless config
             # Convert keys to symbols...
             config.keys.each {|key|config[(key.to_sym rescue key) || key] = config.delete(key)}
-            name=config.delete(:name) # Pull out name and remove from hash
-            agent_setup.create_agent agent_id,name,config
+            agent_setup.create_agent @context, agent_id, config
           end
         end
       end
@@ -62,58 +92,68 @@ module NewRelic
       def setup &block
         block.call(agent_setup)
       end
+
+      def agent_startup
+        if configured_agents.size == 0
+          err_msg = "No agents configured!"
+          err_msg += " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
+          Logger.error(err_msg)
+          raise NoAgents, err_msg
+        end
+        installed_agents.each do |agent_id,installed_agent|
+          version = installed_agent[:agent_class].version
+          Logger.info("Agent #{installed_agent[:label]} is at version #{version}") if version
+        end
+        configured_agents.each do |agent|
+          agent.startup if agent.respond_to? :startup
+        end
+      end
+
       #
       # Call this method to loop forever. This will delay an appropriate amount until
       # the next metric pull is needed, then it will loop thru all configured agents
       # and call each one in turn so it can perform it's appropriate metric pull.
       #
+
       def loop_forever
-        if configured_agents.size==0
-          err_msg = "No agents configured!"
-          err_msg+= " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
-          Logger.write err_msg
-          raise NoAgents, err_msg
-        end
-        installed_agents.each do |agent_id,installed_agent|
-          version = installed_agent[:agent_class].version
-          Logger.write "Agent #{installed_agent[:label]} is at version #{version}" if version
-        end
-        configured_agents.each do |agent|
-          agent.startup if agent.respond_to? :startup
-        end
-        @done=false
+        @done = false
         begin
           while !@done
-            #
-            # Set last run time
-            @last_run_time=Time.now
-            #
-            # Call each agent
-            cnt=0
-            configured_agents.each do |agent|
-              begin
-                cnt+=agent.run @poll_cycle
-              rescue => err
-                Logger.write "Error occurred in poll cycle: #{err}"
-              end
-            end
-            Logger.write "Gathered #{cnt} statistics"
-            #
-            # Delay until next run
-            secs_to_delay=@poll_cycle-(Time.now-@last_run_time)
-            sleep secs_to_delay if secs_to_delay>0
+            @last_run_time = Time.now
+            request = @context.new_request()
+            run_agent_data_collection(request)
+            request.deliver
+            Logger.info("Gathered #{request.metric_count} statistics from #{request.component_count} components")
+
+            seconds_to_delay = @poll_cycle_period - (Time.now - @last_run_time)
+            sleep(seconds_to_delay) if seconds_to_delay > 0
           end
-        rescue Interrupt =>err
-          Logger.write "Shutting down..."
+        rescue Interrupt => err
+          Logger.info "Shutting down..."
         end
+      end
+
+      def run_agent_data_collection(request)
+        Logger.debug('Start collecting agent data for poll cycle')
+        configured_agents.each do |agent|
+          begin
+            agent.run(request)
+          rescue => err
+            Logger.error("Error occurred in poll cycle: #{err}")
+          end
+        end
+        Logger.debug('Finished collecting agent data for poll cycle')
+      end
+
+      def agent_shutdown
         configured_agents.each do |agent|
           agent.shutdown if agent.respond_to? :shutdown
         end
-        Logger.write "Shutdown complete"
+        Logger.info("Shutdown complete")
       end
-      #private
+
       def agent_setup
-        @agent_setup||=AgentSetup.new
+        @agent_setup ||= AgentSetup.new
       end
     end
   end

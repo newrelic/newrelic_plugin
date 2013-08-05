@@ -19,17 +19,10 @@ module NewRelic
               :ident => ident
           }
         end
-        #def install_processor klass
-        #  @installed_processors||={}
-        #  tmp_instance=klass.new
-        #  @installed_processors[tmp_instance.ident]={ident: tmp_instance.ident,processor_class: klass,label: tmp_instance.label}
-        #end
+
         def installed_agents
           @installed_agents||{}
         end
-        #def installed_processors
-        #  @installed_processors||{}
-        #end
       end
     end
 
@@ -41,10 +34,10 @@ module NewRelic
       def initialize
         @agents=[]
       end
-      def create_agent ident,name,options=nil,&block
-        agent_info=Setup.installed_agents[ident]
+      def create_agent context, ident, options=nil, &block
+        agent_info = Setup.installed_agents[ident]
         raise UnknownInstalledAgent,"Unrecognized agent '#{ident}'" unless agent_info
-        agent=agent_info[:agent_class].new name,agent_info,options
+        agent = agent_info[:agent_class].new context, options
         raise CouldNotInitializeAgent unless agent
         block.call(agent) if block_given?
         @agents<<agent
