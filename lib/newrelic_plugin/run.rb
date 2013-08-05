@@ -121,7 +121,7 @@ module NewRelic
           while !@done
             @last_run_time = Time.now
             request = @context.new_request()
-            process_agent_runs(request)
+            run_agent_data_collection(request)
             request.deliver
             Logger.info("Gathered #{request.metric_count} statistics from #{request.component_count} components")
 
@@ -133,7 +133,7 @@ module NewRelic
         end
       end
 
-      def process_agent_runs(request)
+      def run_agent_data_collection(request)
         Logger.debug('Start collecting agent data for poll cycle')
         configured_agents.each do |agent|
           begin
