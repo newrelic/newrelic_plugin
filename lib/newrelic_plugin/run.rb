@@ -16,19 +16,33 @@ module NewRelic
         run.agent_shutdown
       end
       def initialize
-        config = NewRelic::Plugin::Config.config
+        @config = NewRelic::Plugin::Config.config
         @context = NewRelic::Binding::Context.new(
           NewRelic::Plugin::VERSION,
           'localhost', #intended to be the name of the host running the agent
           0, #intended to be the PID of the agent process
-          config.newrelic['license_key']
+          @config.newrelic['license_key']
         )
-        NewRelic::Binding::Config.endpoint = config.newrelic['endpoint'] if config.newrelic['endpoint']
-        @poll_cycle_period = (config.newrelic["poll"] || 60).to_i
-        NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
-        if NewRelic::Plugin::Config.config.newrelic["verbose"].to_i > 0
+        configuration_and_logging
+      end
+
+      def configuration_and_logging
+        if @config.newrelic["verbose"].to_i > 0
           NewRelic::Logger.log_level = ::Logger::DEBUG
         end
+
+        if @config.newrelic['endpoint']
+          NewRelic::Binding::Config.endpoint = @config.newrelic['endpoint']
+          Logger.info("Using alternate endpoint")
+        end
+
+        if @config.newrelic['proxy']
+          NewRelic::Binding::Config.proxy = @config.newrelic['proxy']
+          Logger.info("Using a proxy")
+        end
+
+        @poll_cycle_period = (@config.newrelic["poll"] || 60).to_i
+        NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
         if @poll_cycle_period <= 0
           message = "A poll cycle period less than or equal to 0 is invalid"
           Logger.fatal(message)

@@ -17,7 +17,12 @@ module NewRelic
         begin
           Logger.debug("JSON payload: #{data}")
           uri = URI.parse(url)
-          http = Net::HTTP.new(uri.host, uri.port)
+          if Config.proxy.nil?
+            http = Net::HTTP.new(uri.host, uri.port)
+          else
+            proxy = Config.proxy
+            http = Net::HTTP.new(uri.host, uri.port, proxy['address'], proxy['port'], proxy['user'], proxy['password'])
+          end
           if use_ssl?
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless Config.ssl_host_verification
