@@ -8,7 +8,7 @@ module NewRelic
         @component = component
         @name = name
         @value = value
-        if options.keys.to_set.superset?(Set.new([:count, :min, :max, :sum_of_squares]))
+        if options_has_required_keys(options)
           @count = options[:count].to_i
           @min = options[:min].to_f
           @max = options[:max].to_f
@@ -30,6 +30,11 @@ module NewRelic
         }
       end
 
+      private
+
+      def options_has_required_keys(options)
+        options.keys.to_set.superset?(Set.new([:count, :min, :max, :sum_of_squares]))
+      end
     end
   end
 end
