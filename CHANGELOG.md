@@ -5,6 +5,22 @@
 **Features**
 
 * To fill in
+
+### v1.1.0 - August 5, 2013 ###
+
+**Features**
+
+* Improved logging
+* Support for proxies
+
+**Bug Fixes**
+
+* Duration of data collection time is now calculated to match actual duration
+
+**Changes**
+
+* Dropped dependency on Faraday
+
 ### v1.0.3 - June 25, 2013 ###
 
 **Features**
