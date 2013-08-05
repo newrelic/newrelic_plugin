@@ -33,12 +33,12 @@ module NewRelic
 
         if @config.newrelic['endpoint']
           NewRelic::Binding::Config.endpoint = @config.newrelic['endpoint']
-          Logger.info("Using alternate endpoint")
+          Logger.info("Using alternate endpoint: #{NewRelic::Binding::Config.endpoint}")
         end
 
         if @config.newrelic['proxy']
           NewRelic::Binding::Config.proxy = @config.newrelic['proxy']
-          Logger.info("Using a proxy")
+          Logger.info("Using a proxy: #{NewRelic::Binding::Config.proxy.inspect}")
         end
 
         @poll_cycle_period = (@config.newrelic["poll"] || 60).to_i
