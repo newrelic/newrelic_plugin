@@ -8,10 +8,18 @@ module NewRelic
         @component = component
         @name = name
         @value = value
-        @count = options[:count] ? options[:count].to_f : 1
-        @min = options[:min] ? options[:min].to_f : value
-        @max = options[:max] ? options[:max].to_f : value
-        @sum_of_squares = options[:sum_of_squares] ? options[:sum_of_squares].to_f : (value * value)
+        if options.keys.to_set.superset?(Set.new([:count, :min, :max, :sum_of_squares]))
+          @count = options[:count].to_i
+          @min = options[:min].to_f
+          @max = options[:max].to_f
+          @sum_of_squares = options[:sum_of_squares].to_f
+        else
+          Logger.warn("Metric #{@name} count, min, max, and sum_of_squares are all required if one is set, falling back to value only") unless options.size == 0
+          @count = 1
+          @min = value
+          @max = value
+          @sum_of_squares = (value * value)
+        end
       end
 
       def to_hash
