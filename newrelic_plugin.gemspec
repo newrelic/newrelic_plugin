@@ -25,6 +25,8 @@ Gem::Specification.new do |s|
                     "--main", "README.md"]
   s.extra_rdoc_files = %w[README.md LICENSE]
 
+  s.add_dependency 'json'
+
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
   s.add_development_dependency 'mocha'
