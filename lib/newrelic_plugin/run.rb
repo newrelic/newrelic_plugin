@@ -30,6 +30,7 @@ module NewRelic
         if @config.newrelic["verbose"].to_i > 0
           NewRelic::Logger.log_level = ::Logger::DEBUG
         end
+        NewRelic::Logger.info("Using Ruby SDK version: #{NewRelic::Plugin::VERSION}")
 
         if @config.newrelic['endpoint']
           NewRelic::Binding::Config.endpoint = @config.newrelic['endpoint']
