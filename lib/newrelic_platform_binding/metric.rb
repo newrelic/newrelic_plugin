@@ -1,3 +1,4 @@
+require 'set'
 module NewRelic
   module Binding
     class Metric
