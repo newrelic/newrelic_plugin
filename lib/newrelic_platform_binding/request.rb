@@ -1,3 +1,4 @@
+require 'json'
 module NewRelic
   module Binding
     class Request
