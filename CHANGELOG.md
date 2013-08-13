@@ -6,6 +6,13 @@
 
 * To fill in
 
+### v1.1.1 - August 13, 2013 ###
+
+**Bug Fixes**
+
+* Fixed issue where to_set method was not found when requiring this gem without using bundler.
+* Added JSON as a dependency to provide Ruby 1.8.7 support.
+
 ### v1.1.0 - August 5, 2013 ###
 
 **Features**
