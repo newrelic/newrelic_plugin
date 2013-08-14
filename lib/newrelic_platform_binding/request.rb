@@ -28,11 +28,17 @@ module NewRelic
       end
 
       def add_metric(component, name, value, options = {})
-        metric =  Metric.new(self, name, value, options)
-        @metrics[component.key] ||= []
-        @metrics[component.key].push(metric)
+        metric = find_metric(component, name)
+        if metric.nil?
+          metric =  Metric.new(self, name, value, options)
+          @metrics[component.key] ||= []
+          @metrics[component.key].push(metric)
+        else
+          metric.aggregate(value, options)
+        end
         return metric
       end
+
 
       def metric_count
         count = 0
@@ -46,6 +52,10 @@ module NewRelic
         @metrics.size
       end
     private
+      def find_metric(component, name)
+        @metrics[component.key].find { |m| m.name == name } unless @metrics[component.key].nil?
+      end
+
       def build_request_data_structure
         {
           'agent' => build_agent_hash(),

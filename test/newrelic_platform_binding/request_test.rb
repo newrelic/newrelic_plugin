@@ -24,6 +24,39 @@ class RequestTest < Minitest::Test
     assert_equal NewRelic::Binding::Metric, @metric.class
   end
 
+  def test_add_metric_does_not_aggregate_when_metric_does_not_already_exist
+    metric_setup
+    NewRelic::Binding::Metric.any_instance.expects(:aggregate).never
+    @metric = @request.add_metric(@component, 'Component/test_name', 10)
+  end
+
+  def test_add_metric_aggregates_when_metric_already_exists
+    metric_setup
+    @metric = @request.add_metric(@component, 'Component/test_name', 10)
+    @metric.expects(:aggregate)
+    @request.add_metric(@component, 'Component/test_name', 10)
+  end
+
+  def test_find_metric_when_component_does_not_exist_yet
+    metric_setup
+    metric_name = 'Component/test_name'
+    assert_equal nil, @request.send(:find_metric, @component, metric_name)
+  end
+
+  def test_find_metric_when_metric_does_not_exist
+    metric_setup
+    metric_name = 'Component/test_name'
+    metric = @request.add_metric(@component, metric_name, 10)
+    assert_equal nil, @request.send(:find_metric, @component, metric_name + '/foo')
+  end
+
+  def test_find_metric_when_metric_already_exists
+    metric_setup
+    metric_name = 'Component/test_name'
+    metric = @request.add_metric(@component, metric_name, 10)
+    assert_equal metric, @request.send(:find_metric, @component, metric_name)
+  end
+
   def test_before_adding_metric_the_requests_metrics_data_structure_is_empty
     metric_setup
     assert_equal Hash.new, @request.instance_variable_get(:@metrics)
