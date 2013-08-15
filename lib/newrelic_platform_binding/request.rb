@@ -31,16 +31,16 @@ module NewRelic
 
       def add_metric(component, name, value, options = {})
         metric = find_metric(component, name)
+        new_metric =  Metric.new(self, name, value, options)
         if metric.nil?
-          metric =  Metric.new(self, name, value, options)
+          metric = new_metric
           @metrics[component.key] ||= []
           @metrics[component.key].push(metric)
         else
-          metric.aggregate(value, options)
+          metric.aggregate(new_metric)
         end
         return metric
       end
-
 
       def metric_count
         count = 0

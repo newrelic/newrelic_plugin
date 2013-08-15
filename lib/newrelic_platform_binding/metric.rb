@@ -23,22 +23,12 @@ module NewRelic
         end
       end
 
-      def aggregate(input_value, options = {})
-        value = input_value.to_f
-        if options_has_required_keys(options)
-          @value = @value + value
-          @count = @count + options[:count].to_i
-          @min = [@min, options[:min].to_f].min
-          @max = [@max, options[:max].to_f].max
-          @sum_of_squares = @sum_of_squares + options[:sum_of_squares].to_f
-        else
-          Logger.warn("Metric #{@name} count, min, max, and sum_of_squares are all required if one is set, falling back to value only") unless options.size == 0
-          @value = @value + value
-          @count += 1
-          @min = [@min, value].min
-          @max = [@max, value].max
-          @sum_of_squares = @sum_of_squares + value * value
-        end
+      def aggregate(metric)
+        @value += metric.value
+        @count += metric.count
+        @min = [@min, metric.min].min
+        @max = [@max, metric.max].max
+        @sum_of_squares += metric.sum_of_squares
       end
 
       def to_hash
