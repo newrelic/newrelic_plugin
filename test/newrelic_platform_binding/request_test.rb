@@ -8,14 +8,9 @@ class RequestTest < Minitest::Test
     @context = NewRelic::Binding::Context.new('1.0.0', '192.168.1.1', '1234', 'license_key')
   end
 
-  def test_initialization_without_duration
+  def test_initialization
     request = NewRelic::Binding::Request.new(@context)
-    assert_equal nil, request.duration
-  end
-
-  def test_initialization_with_duration
-    request = NewRelic::Binding::Request.new(@context, 60)
-    assert_equal 60, request.duration
+    assert_equal @context, request.context
   end
 
   def test_add_metric_returns_a_metric
@@ -80,6 +75,25 @@ class RequestTest < Minitest::Test
     metric_setup
     ::NewRelic::Logger.expects(:warn).with("Component with name \"name\" and guid \"com.test\" had no metrics")
     @request.send(:build_request_data_structure)
+  end
+
+  def test_delivered_returns_false_after_initialization
+    metric_setup
+    assert_equal false, @request.delivered?
+  end
+
+  def test_delivered_returns_true_after_successful_delivery
+    metric_setup
+    ::NewRelic::Binding::Connection.any_instance.expects(:send_request).returns(true)
+    @request.deliver
+    assert_equal true, @request.delivered?
+  end
+
+  def test_delivered_returns_false_after_unsuccessful_delivery
+    metric_setup
+    ::NewRelic::Binding::Connection.any_instance.expects(:send_request).returns(false)
+    @request.deliver
+    assert_equal false, @request.delivered?
   end
 
   def example_hash

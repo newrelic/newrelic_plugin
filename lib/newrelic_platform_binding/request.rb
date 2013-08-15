@@ -2,12 +2,13 @@ require 'json'
 module NewRelic
   module Binding
     class Request
-      attr_reader :duration
+      attr_reader :context
 
-      def initialize(context, duration = nil)
+      def initialize(context)
         @context = context
-        @duration = duration
+        @duration = nil
         @metrics = {}
+        @delivered = false
         return self
       end
 
@@ -15,6 +16,7 @@ module NewRelic
         metrics_hash = build_request_data_structure
         connection = Connection.new(@context)
         if connection.send_request(metrics_hash.to_json)
+          @delivered = true
           delivered_at = Time.now
           duration_warning = false
           @context.components.each do |component|
@@ -50,6 +52,10 @@ module NewRelic
 
       def component_count
         @metrics.size
+      end
+
+      def delivered?
+        @delivered
       end
     private
       def find_metric(component, name)
