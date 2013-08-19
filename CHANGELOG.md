@@ -6,6 +6,18 @@
 
 * To fill in
 
+### v1.2.0 - August 19, 2013 ###
+
+**Features**
+
+* Aggregate data when the collector is unreachable.
+
+**Bug Fixes**
+
+* Fixed issue where the ssl_host_verification flag was not working.
+* Fixed ordering of min and max in metric array that is sent to the HTTP API.
+
+
 ### v1.1.1 - August 13, 2013 ###
 
 **Bug Fixes**
