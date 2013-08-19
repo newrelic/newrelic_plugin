@@ -23,10 +23,18 @@ module NewRelic
         end
       end
 
+      def aggregate(metric)
+        @value += metric.value
+        @count += metric.count
+        @min = [@min, metric.min].min
+        @max = [@max, metric.max].max
+        @sum_of_squares += metric.sum_of_squares
+      end
+
       def to_hash
         {
           name => [
-            @value, @count, @max, @min, @sum_of_squares
+            @value, @count, @min, @max, @sum_of_squares
           ]
         }
       end

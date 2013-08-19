@@ -121,7 +121,7 @@ module NewRelic
         begin
           while !@done
             @last_run_time = Time.now
-            request = @context.new_request()
+            request = @context.get_request()
             run_agent_data_collection(request)
             request.deliver
             Logger.info("Gathered #{request.metric_count} statistics from #{request.component_count} components")

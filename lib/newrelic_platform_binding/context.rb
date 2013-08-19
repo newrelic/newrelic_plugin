@@ -6,6 +6,7 @@ module NewRelic
       def initialize(version, host, pid, license_key)
         @version = version
         @host = host
+        @request = Request.new(self)
         @pid = pid
         @license_key = license_key
         @components = []
@@ -17,8 +18,11 @@ module NewRelic
         return component
       end
 
-      def new_request(duration = nil)
-        return Request.new(self, duration)
+      def get_request()
+        if @request.delivered?
+          @request = Request.new(self)
+        end
+        @request
       end
 
     end
