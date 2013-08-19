@@ -30,11 +30,16 @@ module NewRelic
         if @config.newrelic["verbose"].to_i > 0
           NewRelic::Logger.log_level = ::Logger::DEBUG
         end
-        NewRelic::Logger.info("Using Ruby SDK version: #{NewRelic::Plugin::VERSION}")
+        Logger.info("Using Ruby SDK version: #{NewRelic::Plugin::VERSION}")
 
         if @config.newrelic['endpoint']
           NewRelic::Binding::Config.endpoint = @config.newrelic['endpoint']
           Logger.info("Using alternate endpoint: #{NewRelic::Binding::Config.endpoint}")
+        end
+
+        unless @config.newrelic['ssl_host_verification'].nil?
+          NewRelic::Binding::Config.ssl_host_verification = !!@config.newrelic['ssl_host_verification']
+          Logger.info("Disabling ssl host verification") unless NewRelic::Binding::Config.ssl_host_verification
         end
 
         if @config.newrelic['proxy']
