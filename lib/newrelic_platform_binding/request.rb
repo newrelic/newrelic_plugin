@@ -2,12 +2,13 @@ require 'json'
 module NewRelic
   module Binding
     class Request
-      attr_reader :duration
+      attr_reader :context
 
-      def initialize(context, duration = nil)
+      def initialize(context)
         @context = context
-        @duration = duration
+        @duration = nil
         @metrics = {}
+        @delivered = false
         return self
       end
 
@@ -15,6 +16,7 @@ module NewRelic
         metrics_hash = build_request_data_structure
         connection = Connection.new(@context)
         if connection.send_request(metrics_hash.to_json)
+          @delivered = true
           delivered_at = Time.now
           duration_warning = false
           @context.components.each do |component|
@@ -28,9 +30,15 @@ module NewRelic
       end
 
       def add_metric(component, name, value, options = {})
-        metric =  Metric.new(self, name, value, options)
-        @metrics[component.key] ||= []
-        @metrics[component.key].push(metric)
+        metric = find_metric(component, name)
+        new_metric =  Metric.new(self, name, value, options)
+        if metric.nil?
+          metric = new_metric
+          @metrics[component.key] ||= []
+          @metrics[component.key].push(metric)
+        else
+          metric.aggregate(new_metric)
+        end
         return metric
       end
 
@@ -45,7 +53,15 @@ module NewRelic
       def component_count
         @metrics.size
       end
+
+      def delivered?
+        @delivered
+      end
     private
+      def find_metric(component, name)
+        @metrics[component.key].find { |m| m.name == name } unless @metrics[component.key].nil?
+      end
+
       def build_request_data_structure
         {
           'agent' => build_agent_hash(),

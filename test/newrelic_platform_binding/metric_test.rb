@@ -67,7 +67,23 @@ class MetricTest < Minitest::Test
 
   def test_initialize_with_string_for_value_and_options
     metric = NewRelic::Binding::Metric.new(@component, 'Component/Test/rate[units]', '10', :count => '2', :max => '15', :min => '5', :sum_of_squares => '250')
-    hash = { 'Component/Test/rate[units]' => [10.0, 2, 15.0, 5.0, 250.0] }
+    hash = { 'Component/Test/rate[units]' => [10.0, 2, 5.0, 15.0, 250.0] }
+    assert_equal hash, metric.to_hash
+  end
+
+  def test_aggregate_with_value
+    metric = initialize_metric()
+    metric2 = NewRelic::Binding::Metric.new(@component, 'Component/Test/rate[units]', 15)
+    metric.aggregate(metric2)
+    hash = { 'Component/Test/rate[units]' => [25.0, 2, 10.0, 15.0, 325.0] }
+    assert_equal hash, metric.to_hash
+  end
+
+  def test_aggregate_with_value_and_options
+    metric = initialize_metric()
+    metric2 = NewRelic::Binding::Metric.new(@component, 'Component/Test/rate[units]', '20', :count => '2', :max => '15', :min => '5', :sum_of_squares => '250')
+    metric.aggregate(metric2)
+    hash = { 'Component/Test/rate[units]' => [30.0, 3, 5.0, 15.0, 350.0] }
     assert_equal hash, metric.to_hash
   end
 
@@ -76,6 +92,6 @@ class MetricTest < Minitest::Test
   end
 
   def expected_hash
-    { 'Component/Test/rate[units]' => [10, 2, 15, 5, 250] }
+    { 'Component/Test/rate[units]' => [10, 2, 5, 15, 250] }
   end
 end
