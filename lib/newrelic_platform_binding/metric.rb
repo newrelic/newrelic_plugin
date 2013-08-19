@@ -34,7 +34,7 @@ module NewRelic
       def to_hash
         {
           name => [
-            @value, @count, @max, @min, @sum_of_squares
+            @value, @count, @min, @max, @sum_of_squares
           ]
         }
       end
