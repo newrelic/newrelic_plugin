@@ -70,11 +70,12 @@ module NewRelic
       end
 
       def build_agent_hash
-        {
+        agent_hash = {
           'version' => @context.version,
-          'host' => @context.host,
-          'pid' => @context.pid,
         }
+        agent_hash['host'] = @context.host unless @context.host.nil?
+        agent_hash['pid'] = @context.pid unless @context.pid.nil?
+        agent_hash
       end
 
       def build_components_array
