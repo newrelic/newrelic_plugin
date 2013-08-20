@@ -18,9 +18,6 @@ module NewRelic
       def initialize
         @config = NewRelic::Plugin::Config.config
         @context = NewRelic::Binding::Context.new(
-          NewRelic::Plugin::VERSION,
-          'localhost', #intended to be the name of the host running the agent
-          0, #intended to be the PID of the agent process
           @config.newrelic['license_key']
         )
         configuration_and_logging

@@ -40,6 +40,7 @@ module NewRelic
         agent = agent_info[:agent_class].new context, options
         raise CouldNotInitializeAgent unless agent
         block.call(agent) if block_given?
+        context.version = agent.version
         @agents<<agent
       end
     end
