@@ -4,7 +4,7 @@ class AgentTest < Minitest::Test
 
   def setup
     @agent_class = TestingAgent::Agent.dup
-    @context = NewRelic::Binding::Context.new('1.0.0', 'localhost', '0', 'license_key')
+    @context = NewRelic::Binding::Context.new('license_key')
   end
 
   def test_agent_guid_should_set_guid

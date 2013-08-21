@@ -14,5 +14,7 @@ module TestingAgent
     agent_version '0.0.1'
     agent_human_labels("Testing") { "Testing host" }
   end
+
+  NewRelic::Plugin::Setup.install_agent 'testing_agent', TestingAgent
 end
 
