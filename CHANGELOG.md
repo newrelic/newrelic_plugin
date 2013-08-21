@@ -6,6 +6,13 @@
 
 * To fill in
 
+### v1.2.1 - August 21, 2013 ###
+
+**Bug Fixes**
+
+* Send plugin version, not SDK version, in the HTTP request.
+* Stop sending host in the HTTP request, reverting to pre 1.1.0 behavior.
+
 ### v1.2.0 - August 19, 2013 ###
 
 **Features**
