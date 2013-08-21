@@ -1,13 +1,14 @@
 module NewRelic
   module Binding
     class Context
-      attr_reader :components, :version, :host, :pid, :license_key
+      attr_reader :components, :license_key
+      attr_accessor :version, :host, :pid
 
-      def initialize(version, host, pid, license_key)
-        @version = version
-        @host = host
+      def initialize(license_key)
+        @version = nil
+        @host = nil
         @request = Request.new(self)
-        @pid = pid
+        @pid = nil
         @license_key = license_key
         @components = []
       end

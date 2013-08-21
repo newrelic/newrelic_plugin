@@ -5,7 +5,7 @@ class RequestTest < Minitest::Test
 
   def setup
     FakeWeb.allow_net_connect = false
-    @context = NewRelic::Binding::Context.new('1.0.0', '192.168.1.1', '1234', 'license_key')
+    @context = NewRelic::Binding::Context.new('license_key')
   end
 
   def test_initialization
@@ -99,9 +99,7 @@ class RequestTest < Minitest::Test
   def example_hash
     {
       'agent' => {
-        'version' => '1.0.0',
-        'host' => '192.168.1.1',
-        'pid' => '1234'
+        'version' => '1.0.0'
       },
       'components' => [
         {
@@ -118,6 +116,7 @@ class RequestTest < Minitest::Test
   end
 
   def metric_setup
+    @context.version = '1.0.0'
     @component = @context.create_component('name', 'com.test')
     @request = NewRelic::Binding::Request.new(@context)
   end
