@@ -3,16 +3,13 @@ module NewRelic
 #
 # Setup support methods.
 #
-# Author:: Lee Atchison <lee@newrelic.com>
-# Copyright:: Copyright (c) 2012 New Relic, Inc.
-#
     #
     # Setup and Register new agent types and new processors
     #
     class Setup
       class << self
-        def install_agent ident,klass
-          @installed_agents||={}
+        def install_agent ident, klass
+          @installed_agents ||= {}
           @installed_agents[ident] = {
               :agent_class => klass::Agent,
               :label => klass::Agent.label,
@@ -21,7 +18,7 @@ module NewRelic
         end
 
         def installed_agents
-          @installed_agents||{}
+          @installed_agents || {}
         end
       end
     end
@@ -32,16 +29,16 @@ module NewRelic
     class AgentSetup
       attr_reader :agents
       def initialize
-        @agents=[]
+        @agents = []
       end
-      def create_agent context, ident, options=nil, &block
+      def create_agent context, ident, options = nil, &block
         agent_info = Setup.installed_agents[ident]
         raise UnknownInstalledAgent,"Unrecognized agent '#{ident}'" unless agent_info
         agent = agent_info[:agent_class].new context, options
         raise CouldNotInitializeAgent unless agent
         block.call(agent) if block_given?
         context.version = agent.version
-        @agents<<agent
+        @agents << agent
       end
     end
   end
