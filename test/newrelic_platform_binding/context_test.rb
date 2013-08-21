@@ -3,7 +3,7 @@ require 'test_helper'
 class ContextTest < Minitest::Test
 
   def setup
-    @context = NewRelic::Binding::Context.new('1.0.0', '192.168.1.1', '1234', 'license_key')
+    @context = NewRelic::Binding::Context.new('license_key')
   end
 
   def test_that_create_component_returns_created_appointment

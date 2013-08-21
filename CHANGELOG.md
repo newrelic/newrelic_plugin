@@ -4,7 +4,10 @@
 
 **Features**
 
-* To fill in
+**Bug Fixes**
+
+* Send agent version to the HTTP API, not the SDK version.
+
 
 ### v1.2.0 - August 19, 2013 ###
 

@@ -18,9 +18,6 @@ module NewRelic
       def initialize
         @config = NewRelic::Plugin::Config.config
         @context = NewRelic::Binding::Context.new(
-          NewRelic::Plugin::VERSION,
-          'localhost', #intended to be the name of the host running the agent
-          0, #intended to be the PID of the agent process
           @config.newrelic['license_key']
         )
         configuration_and_logging
@@ -71,16 +68,16 @@ module NewRelic
         agent_setup.agents
       end
 
-      def setup_from_config component_type_filter=nil
+      def setup_from_config(component_type_filter = nil)
         return unless NewRelic::Plugin::Config.config.agents
-        installed_agents.each do |agent_id,installed_agent|
-          next if component_type_filter and agent_id!=component_type_filter
-          config_list=NewRelic::Plugin::Config.config.agents[agent_id.to_s]
+        installed_agents.each do |agent_id, installed_agent|
+          next if component_type_filter and agent_id != component_type_filter
+          config_list = NewRelic::Plugin::Config.config.agents[agent_id.to_s]
           next unless config_list
           [config_list].flatten.each do |config|
             next unless config
             # Convert keys to symbols...
-            config.keys.each {|key|config[(key.to_sym rescue key) || key] = config.delete(key)}
+            config.keys.each { |key|config[(key.to_sym rescue key) || key] = config.delete(key) }
             agent_setup.create_agent @context, agent_id, config
           end
         end
