@@ -6,6 +6,7 @@ require 'newrelic_plugin'
 require 'minitest/autorun'
 require 'mocha/setup'
 require 'pry'
+require 'timecop'
 
 
 module TestingAgent

@@ -19,6 +19,14 @@ class ContextTest < Minitest::Test
     assert_equal request, @context.get_request
   end
 
+  def test_that_get_request_returns_a_new_request_if_the_aggregation_limit_is_reached
+    Timecop.freeze(Time.now - 25 * 60)
+    context = NewRelic::Binding::Context.new('license_key')
+    request = context.get_request
+    Timecop.return
+    assert request != context.get_request
+  end
+
   def test_that_get_request_returns_a_new_request_if_the_request_has_been_delivered
     request = @context.get_request
     request.expects(:delivered?).returns(true)

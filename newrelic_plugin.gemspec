@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "minitest", '>= 5.0.6'
   s.add_development_dependency 'fakeweb'
   s.add_development_dependency 'pry'
+  s.add_development_dependency 'timecop'
 
   s.files         = `git ls-files`.split($\)
   s.executables   = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
