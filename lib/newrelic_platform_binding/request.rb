@@ -18,6 +18,7 @@ module NewRelic
         if connection.send_request(metrics_hash.to_json)
           @delivered = true
           delivered_at = Time.now
+          context.last_request_delivered_at = delivered_at
           duration_warning = false
           @context.components.each do |component|
             if @metrics.has_key?(component.key)
