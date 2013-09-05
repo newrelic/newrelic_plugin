@@ -84,9 +84,12 @@ class RequestTest < Minitest::Test
 
   def test_delivered_returns_true_after_successful_delivery
     metric_setup
+    Timecop.freeze(Time.now)
     ::NewRelic::Binding::Connection.any_instance.expects(:send_request).returns(true)
+    @context.expects(:last_request_delivered_at=).with(Time.now)
     @request.deliver
     assert_equal true, @request.delivered?
+    Timecop.return
   end
 
   def test_delivered_returns_false_after_unsuccessful_delivery
@@ -118,7 +121,7 @@ class RequestTest < Minitest::Test
   def metric_setup
     @context.version = '1.0.0'
     @component = @context.create_component('name', 'com.test')
-    @request = NewRelic::Binding::Request.new(@context)
+    @request = @context.get_request()
   end
 
 end
