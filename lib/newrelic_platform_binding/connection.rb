@@ -27,8 +27,8 @@ module NewRelic
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless Config.ssl_host_verification
           end
-          http.open_timeout = 30
-          http.read_timeout = 30
+          http.open_timeout = 20
+          http.read_timeout = 20
           request = Net::HTTP::Post.new(uri.path)
           request['content-type'] = 'application/json'
           request['X-License-Key'] = @license_key
