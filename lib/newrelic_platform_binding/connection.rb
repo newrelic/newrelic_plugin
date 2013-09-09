@@ -27,12 +27,17 @@ module NewRelic
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless Config.ssl_host_verification
           end
+          http.open_timeout = 20
+          http.read_timeout = 20
           request = Net::HTTP::Post.new(uri.path)
           request['content-type'] = 'application/json'
           request['X-License-Key'] = @license_key
           request.body = data
           response = http.request(request)
           return evaluate_response(response)
+        rescue Timeout::Error => err
+          Logger.warn "Connection Timeout Error: #{err.inspect} #{err.message}"
+          return false
         rescue => err
           Logger.warn "HTTP Connection Error: #{err.inspect} #{err.message}"
           return false
