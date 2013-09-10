@@ -16,12 +16,41 @@ class ConfigTest < Minitest::Test
     NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
   end
 
+  def test_use_ssl_with_https_url
+    NewRelic::Binding::Config.endpoint = 'https://example.com'
+    assert_equal true, NewRelic::Binding::Config.use_ssl?
+  end
+
+  def test_use_ssl_with_http_url
+    NewRelic::Binding::Config.endpoint = 'http://example.com'
+    assert_equal false, NewRelic::Binding::Config.use_ssl?
+  end
+
+  def test_ssl_supported
+    assert_equal NewRelic::Binding::Config.ssl_supported?, !(!defined?(RUBY_ENGINE) || (RUBY_ENGINE == 'ruby' && RUBY_VERSION < '1.9.0'))
+  end
+
   def test_endpoint_default
-    assert_equal 'https://platform-api.newrelic.com', NewRelic::Binding::Config.endpoint
+    if NewRelic::Binding::Config.ssl_supported?
+      assert_equal 'https://platform-api.newrelic.com', NewRelic::Binding::Config.endpoint
+    else
+      assert_equal 'http://platform-api.newrelic.com', NewRelic::Binding::Config.endpoint
+    end
   end
 
   def test_set_endpoint
     new_endpoint = 'http://example.com'
+    NewRelic::Binding::Config.endpoint = new_endpoint
+    assert_equal new_endpoint, NewRelic::Binding::Config.endpoint
+  end
+
+  def test_set_ssl_endpoint
+    new_endpoint = 'https://example.com'
+    if NewRelic::Binding::Config.ssl_supported?
+      NewRelic::Logger.expects(:warn).with('Using SSL is not recommended when using Ruby versions below 1.9').never
+    else
+      NewRelic::Logger.expects(:warn).with('Using SSL is not recommended when using Ruby versions below 1.9')
+    end
     NewRelic::Binding::Config.endpoint = new_endpoint
     assert_equal new_endpoint, NewRelic::Binding::Config.endpoint
   end
