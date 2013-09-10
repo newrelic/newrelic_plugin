@@ -23,9 +23,9 @@ module NewRelic
             proxy = Config.proxy
             http = Net::HTTP.new(uri.host, uri.port, proxy['address'], proxy['port'], proxy['user'], proxy['password'])
           end
-          if use_ssl?
+          if Config.use_ssl?
             http.use_ssl = true
-            http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless Config.ssl_host_verification
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE if Config.skip_ssl_host_verification?
           end
           http.open_timeout = 20
           http.read_timeout = 20
@@ -81,9 +81,6 @@ module NewRelic
         return_status.nil?
       end
 
-      def use_ssl?
-        @url =~ /^https.*/
-      end
     end
   end
 end
