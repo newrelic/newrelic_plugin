@@ -25,7 +25,7 @@ module NewRelic
           end
           if Config.use_ssl?
             http.use_ssl = true
-            http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless Config.ssl_host_verification
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE if Config.skip_ssl_host_verification?
           end
           http.open_timeout = 20
           http.read_timeout = 20

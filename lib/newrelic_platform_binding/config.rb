@@ -9,11 +9,15 @@ module NewRelic
       end
 
       def self.use_ssl?
-        @endpoint.start_with?("https")
+        @endpoint.start_with?('https')
       end
 
       def self.ssl_supported?
         !(!defined?(RUBY_ENGINE) || (RUBY_ENGINE == 'ruby' && RUBY_VERSION < '1.9.0'))
+      end
+
+      def self.skip_ssl_host_verification?
+        !@ssl_host_verification
       end
 
       if self.ssl_supported?

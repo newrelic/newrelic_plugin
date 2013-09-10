@@ -67,12 +67,14 @@ class ConfigTest < Minitest::Test
 
   def test_ssl_host_verification_default
     assert_equal true, NewRelic::Binding::Config.ssl_host_verification
+    assert_equal false, NewRelic::Binding::Config.skip_ssl_host_verification?
   end
 
   def test_set_ssl_host_verification
     new_ssl_host_verification = false
     NewRelic::Binding::Config.ssl_host_verification = new_ssl_host_verification
     assert_equal new_ssl_host_verification, NewRelic::Binding::Config.ssl_host_verification
+    assert_equal true, NewRelic::Binding::Config.skip_ssl_host_verification?
   end
 
   def test_poll_cycle_period
