@@ -4,9 +4,14 @@
 
 **Features**
 
+
+### v1.2.1 - September 10, 2013 ###
+
 **Bug Fixes**
 
 * Send agent version to the HTTP API, not the SDK version.
+* Stop using SSL by default in Ruby versions below 1.9 (this fixes an issue where the agent stops reporting)
+* Set timeouts on HTTP API connection (fixes an issue where the agent stops reporting in Ruby 1.9 and higher)
 
 
 ### v1.2.0 - August 19, 2013 ###
