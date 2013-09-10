@@ -2,9 +2,16 @@
 
 ## Requirements
 
- * Tested with Ruby 1.8.7 and 1.9.3
- * New Relic account on rpm.newrelic.com, with early access enabled 
-   (contact cooper@newrelic.com to set up early access)
+ * Tested with Ruby 1.8.7, 1.9.3, 2.0.0
+ 
+ Note: In Ruby 1.8.7 SSL is disabled by default due to issues with how Net::HTTP handles connection timeouts. 
+If you override this the plugin may occasionally stop reporting data and require a restart.
+To override you can add the following to `newrelic:` section of the newrelic_config.yml. 
+
+```
+ endpoint: 'https://platform-api.newrelic.com'
+```
+
 
 ## Get Started
 
@@ -36,8 +43,7 @@ Reach out to us at
 There you'll find documentation, FAQs, and forums where you can submit
 suggestions and discuss with staff and other users.
 
-Also available is community support on IRC: we generally use #newrelic
-on irc.freenode.net
+Also available is [community support on Stack Overflow](http://stackoverflow.com/questions/tagged/newrelic-platform).
 
 Find a bug? E-mail <support@newrelic.com>, or submit a ticket to
 
