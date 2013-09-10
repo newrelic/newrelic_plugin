@@ -3,6 +3,15 @@
 ## Requirements
 
  * Tested with Ruby 1.8.7, 1.9.3, 2.0.0
+ 
+ Note: In Ruby 1.8.7 SSL is disabled by default due to issues with how Net::HTTP handles connection timeouts. 
+If you override this the plugin may occasionally stop reporting data and require a restart.
+To override you can add the following to `newrelic:` section of the newrelic_config.yml. 
+
+```
+ endpoint: 'https://platform-api.newrelic.com'
+```
+
 
 ## Get Started
 
