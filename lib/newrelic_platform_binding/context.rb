@@ -21,6 +21,16 @@ module NewRelic
         return component
       end
 
+      def get_component(name, guid)
+        component = find_component(name, guid)
+        component = create_component(name, guid) if component.nil?
+        component
+      end
+
+      def find_component(name, guid)
+        @components.find { |c| c.key == name + guid } unless @components.empty?
+      end
+
       def get_request()
         if past_aggregation_limit?
           @components.each do |component|
