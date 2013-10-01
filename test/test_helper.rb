@@ -10,7 +10,7 @@ require 'timecop'
 
 
 module TestingAgent
-  NewRelic::Logger.log_level = ::Logger::FATAL
+  NewRelic::PlatformLogger.log_level = ::Logger::FATAL
   class Agent < NewRelic::Plugin::Agent::Base
     agent_guid 'com.newrelic.test'
     agent_version '0.0.1'

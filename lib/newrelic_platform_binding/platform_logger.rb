@@ -2,7 +2,7 @@ module NewRelic
   require 'time'
   require 'logger'
 
-  class Logger
+  class PlatformLogger
     @log = ::Logger.new(STDOUT)
     @log.level = ::Logger::WARN
     @log.formatter = proc { |severity, datetime, progname, msg| "[#{Time.iso8601(Time.now.utc.iso8601).to_s}] #{severity}: #{msg}\n" }

@@ -73,7 +73,7 @@ class RequestTest < Minitest::Test
 
   def test_build_request_data_structure_when_component_has_no_metrics
     metric_setup
-    ::NewRelic::Logger.expects(:warn).with("Component with name \"name\" and guid \"com.test\" had no metrics")
+    ::NewRelic::PlatformLogger.expects(:warn).with("Component with name \"name\" and guid \"com.test\" had no metrics")
     @request.send(:build_request_data_structure)
   end
 

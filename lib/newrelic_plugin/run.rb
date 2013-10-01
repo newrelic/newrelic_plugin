@@ -25,40 +25,40 @@ module NewRelic
 
       def configuration_and_logging
         if @config.newrelic["verbose"].to_i > 0
-          NewRelic::Logger.log_level = ::Logger::DEBUG
+          NewRelic::PlatformLogger.log_level = ::Logger::DEBUG
         end
-        Logger.info("Using Ruby SDK version: #{NewRelic::Plugin::VERSION}")
+        PlatformLogger.info("Using Ruby SDK version: #{NewRelic::Plugin::VERSION}")
 
         if @config.newrelic['endpoint']
           NewRelic::Binding::Config.endpoint = @config.newrelic['endpoint']
-          Logger.info("Using alternate endpoint: #{NewRelic::Binding::Config.endpoint}")
+          PlatformLogger.info("Using alternate endpoint: #{NewRelic::Binding::Config.endpoint}")
         end
 
         unless @config.newrelic['ssl_host_verification'].nil?
           NewRelic::Binding::Config.ssl_host_verification = !!@config.newrelic['ssl_host_verification']
-          Logger.info("Disabling ssl host verification") unless NewRelic::Binding::Config.ssl_host_verification
+          PlatformLogger.info("Disabling ssl host verification") unless NewRelic::Binding::Config.ssl_host_verification
         end
 
         if @config.newrelic['proxy']
           NewRelic::Binding::Config.proxy = @config.newrelic['proxy']
-          Logger.info("Using a proxy: #{NewRelic::Binding::Config.proxy.inspect}")
+          PlatformLogger.info("Using a proxy: #{NewRelic::Binding::Config.proxy.inspect}")
         end
 
         @poll_cycle_period = (@config.newrelic["poll"] || 60).to_i
         NewRelic::Binding::Config.poll_cycle_period = @poll_cycle_period
         if @poll_cycle_period <= 0
           message = "A poll cycle period less than or equal to 0 is invalid"
-          Logger.fatal(message)
+          PlatformLogger.fatal(message)
           abort message
         end
         if @poll_cycle_period != 60
-          Logger.warn("WARNING: Poll cycle period differs from 60 seconds (current is #{@poll_cycle_period})")
+          PlatformLogger.warn("WARNING: Poll cycle period differs from 60 seconds (current is #{@poll_cycle_period})")
         end
       end
 
       def installed_agents
         if Setup.installed_agents.size == 0
-          Logger.error("No agents installed!")
+          PlatformLogger.error("No agents installed!")
           raise NoAgents, "No agents installed"
         end
         Setup.installed_agents
@@ -100,12 +100,12 @@ module NewRelic
         if configured_agents.size == 0
           err_msg = "No agents configured!"
           err_msg += " Check the agents portion of your yml file." unless NewRelic::Plugin::Config.config.options.empty?
-          Logger.error(err_msg)
+          PlatformLogger.error(err_msg)
           raise NoAgents, err_msg
         end
         installed_agents.each do |agent_id,installed_agent|
           version = installed_agent[:agent_class].version
-          Logger.info("Agent #{installed_agent[:label]} is at version #{version}") if version
+          PlatformLogger.info("Agent #{installed_agent[:label]} is at version #{version}") if version
         end
         configured_agents.each do |agent|
           agent.startup if agent.respond_to? :startup
@@ -126,34 +126,34 @@ module NewRelic
             request = @context.get_request()
             run_agent_data_collection(request)
             request.deliver
-            Logger.info("Gathered #{request.metric_count} statistics from #{request.component_count} components")
+            PlatformLogger.info("Gathered #{request.metric_count} statistics from #{request.component_count} components")
 
             seconds_to_delay = @poll_cycle_period - (Time.now - @last_run_time)
             sleep(seconds_to_delay) if seconds_to_delay > 0
           end
         rescue Interrupt => err
-          Logger.info "Shutting down..."
+          PlatformLogger.info "Shutting down..."
         end
       end
 
       def run_agent_data_collection(request)
-        Logger.debug('Start collecting agent data for poll cycle')
+        PlatformLogger.debug('Start collecting agent data for poll cycle')
         configured_agents.each do |agent|
           begin
             agent.run(request)
           rescue => err
-            Logger.error("Error occurred in poll cycle: #{err}")
-            Logger.debug("Stacktrace:\n#{err.backtrace.join("\n")}")
+            PlatformLogger.error("Error occurred in poll cycle: #{err}")
+            PlatformLogger.debug("Stacktrace:\n#{err.backtrace.join("\n")}")
           end
         end
-        Logger.debug('Finished collecting agent data for poll cycle')
+        PlatformLogger.debug('Finished collecting agent data for poll cycle')
       end
 
       def agent_shutdown
         configured_agents.each do |agent|
           agent.shutdown if agent.respond_to? :shutdown
         end
-        Logger.info("Shutdown complete")
+        PlatformLogger.info("Shutdown complete")
       end
 
       def agent_setup

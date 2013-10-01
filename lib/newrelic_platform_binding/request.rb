@@ -26,7 +26,7 @@ module NewRelic
               component.last_delivered_at = delivered_at
             end
           end
-          Logger.warn("Duration of more than 10 minutes between sending data to New Relic, this will cause plugins to show up as not reporting") if duration_warning
+          PlatformLogger.warn("Duration of more than 10 minutes between sending data to New Relic, this will cause plugins to show up as not reporting") if duration_warning
         end
       end
 
@@ -100,7 +100,7 @@ module NewRelic
             metrics_hash.merge!(metric.to_hash)
           end
         else
-          Logger.warn("Component with name \"#{component.name}\" and guid \"#{component.guid}\" had no metrics")
+          PlatformLogger.warn("Component with name \"#{component.name}\" and guid \"#{component.guid}\" had no metrics")
         end
         metrics_hash
       end
