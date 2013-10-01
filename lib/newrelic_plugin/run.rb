@@ -143,6 +143,7 @@ module NewRelic
             agent.run(request)
           rescue => err
             Logger.error("Error occurred in poll cycle: #{err}")
+            Logger.debug("Stacktrace:\n#{err.backtrace.join("\n")}")
           end
         end
         Logger.debug('Finished collecting agent data for poll cycle')
