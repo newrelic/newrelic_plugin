@@ -82,20 +82,29 @@ module NewRelic
       def build_components_array
         components_array = []
         @context.components.each do |component|
-          component_hash = {
-            'name' => component.name,
-            'guid' => component.guid,
-            'duration' => component.duration,
-            'metrics' => build_metrics_hash(component)
-          }
-          components_array.push(component_hash)
+          if component_has_metrics?(component)
+            component_hash = {
+              'name' => component.name,
+              'guid' => component.guid,
+              'duration' => component.duration,
+              'metrics' => build_metrics_hash(component)
+            }
+            components_array.push(component_hash)
+          else
+            PlatformLogger.debug("Component with name \"#{component.name}\" and guid \"#{component.guid}\" had no metrics")
+          end
         end
         return components_array
       end
 
+      def component_has_metrics?(component)
+        return true if @metrics.has_key?(component.key) && @metrics[component.key].size > 0
+        return false
+      end
+
       def build_metrics_hash(component)
         metrics_hash = {}
-        if @metrics.has_key?(component.key)
+        if component_has_metrics?(component)
           @metrics[component.key].each do |metric|
             metrics_hash.merge!(metric.to_hash)
           end

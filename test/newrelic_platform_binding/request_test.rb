@@ -71,9 +71,17 @@ class RequestTest < Minitest::Test
     assert_equal example_hash, @request.send(:build_request_data_structure)
   end
 
+  def test_build_request_data_structure_does_not_include_components_without_metrics
+    metric_setup
+    second_component = @context.create_component('name2', 'com.test')
+    @request.add_metric(@component, 'Component/test/first[units]', 1)
+    @request.add_metric(@component, 'Component/test/second[units]', 2)
+    assert_equal example_hash, @request.send(:build_request_data_structure)
+  end
+
   def test_build_request_data_structure_when_component_has_no_metrics
     metric_setup
-    ::NewRelic::PlatformLogger.expects(:warn).with("Component with name \"name\" and guid \"com.test\" had no metrics")
+    ::NewRelic::PlatformLogger.expects(:debug).with("Component with name \"name\" and guid \"com.test\" had no metrics")
     @request.send(:build_request_data_structure)
   end
 
