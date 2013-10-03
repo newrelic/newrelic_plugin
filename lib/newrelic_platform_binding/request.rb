@@ -98,8 +98,7 @@ module NewRelic
       end
 
       def component_has_metrics?(component)
-        return true if @metrics.has_key?(component.key) && @metrics[component.key].size > 0
-        return false
+        @metrics.has_key?(component.key) && @metrics[component.key].size > 0
       end
 
       def build_metrics_hash(component)

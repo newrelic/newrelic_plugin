@@ -28,7 +28,7 @@ module NewRelic
       end
 
       def find_component(name, guid)
-        @components.find { |c| c.key == name + guid } unless @components.empty?
+        @components.find { |c| c.key == name + guid }
       end
 
       def get_request()
