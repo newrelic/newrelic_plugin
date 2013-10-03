@@ -8,8 +8,8 @@
 
 **Changes**
 
-* Stop sending components that did not collect any data for the pull cycle.
-* Output stacktrace for errors that occur in the agents pull cycle code.
+* Stop sending components that did not collect any data for the poll cycle.
+* Output stacktrace for errors that occur in the agents poll cycle code.
 
 ### v1.2.1 - September 10, 2013 ###
 
