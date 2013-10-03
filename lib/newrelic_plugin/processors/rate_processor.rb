@@ -15,8 +15,8 @@ module NewRelic::Processor
   #
   class Rate < NewRelic::Plugin::Processor::Base
     def initialize
-      Logger.warn("OBSOLESCENCE WARNING: The 'Rate' processor is obsolete and should not be used.")
-      Logger.warn("OBSOLESCENCE WARNING: It will be completely removed in the near future.")
+      PlatformLogger.warn("OBSOLESCENCE WARNING: The 'Rate' processor is obsolete and should not be used.")
+      PlatformLogger.warn("OBSOLESCENCE WARNING: It will be completely removed in the near future.")
       super :rate,"Rate"
     end
     def process val

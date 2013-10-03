@@ -1,4 +1,4 @@
-require 'newrelic_platform_binding/logger'
+require 'newrelic_platform_binding/platform_logger'
 require 'newrelic_platform_binding/config'
 require 'newrelic_platform_binding/request'
 require 'newrelic_platform_binding/context'

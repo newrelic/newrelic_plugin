@@ -8,18 +8,18 @@ class RunTest < Minitest::Test
   end
 
   def test_log_level_set_verbose
-    NewRelic::Logger.expects(:log_level=).with(::Logger::DEBUG)
+    NewRelic::PlatformLogger.expects(:log_level=).with(::Logger::DEBUG)
     @newrelic['verbose'] = 1
     initialize_run
   end
 
   def test_log_level_not_set
-    NewRelic::Logger.expects(:log_level=).never
+    NewRelic::PlatformLogger.expects(:log_level=).never
     initialize_run
   end
 
   def test_log_level_set_to_not_verbose
-    NewRelic::Logger.expects(:log_level=).never
+    NewRelic::PlatformLogger.expects(:log_level=).never
     @newrelic['verbose'] = 0
     initialize_run
   end
