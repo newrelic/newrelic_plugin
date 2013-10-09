@@ -15,7 +15,7 @@ module NewRelic
           @max = options[:max].to_f
           @sum_of_squares = options[:sum_of_squares].to_f
         else
-          Logger.warn("Metric #{@name} count, min, max, and sum_of_squares are all required if one is set, falling back to value only") unless options.size == 0
+          PlatformLogger.warn("Metric #{@name} count, min, max, and sum_of_squares are all required if one is set, falling back to value only") unless options.size == 0
           @count = 1
           @min = value
           @max = value

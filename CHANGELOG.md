@@ -4,6 +4,12 @@
 
 **Features**
 
+### v1.3.0 - October 3, 2013 ###
+
+**Changes**
+
+* Stop sending components that did not collect any data for the poll cycle.
+* Output stacktrace for errors that occur in the agents poll cycle code.
 
 ### v1.2.1 - September 10, 2013 ###
 

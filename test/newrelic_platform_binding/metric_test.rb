@@ -11,7 +11,7 @@ class MetricTest < Minitest::Test
   end
 
   def test_initialize_without_options_does_not_trigger_options_warning
-    NewRelic::Logger.expects(:warn).never
+    NewRelic::PlatformLogger.expects(:warn).never
     NewRelic::Binding::Metric.new(@component, 'Component/Test/rate[units]', '10')
   end
 
@@ -36,22 +36,22 @@ class MetricTest < Minitest::Test
   end
 
   def test_count_with_only_count_option_set
-    NewRelic::Logger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
+    NewRelic::PlatformLogger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
     assert_equal 1, initialize_metric(:count => 2).count
   end
 
   def test_min_with_only_min_option_set
-    NewRelic::Logger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
+    NewRelic::PlatformLogger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
     assert_equal 10, initialize_metric(:min => 5).min
   end
 
   def test_max_with_only_max_option_set
-    NewRelic::Logger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
+    NewRelic::PlatformLogger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
     assert_equal 10, initialize_metric(:max => 15).max
   end
 
   def test_sum_of_squares_with_only_sum_of_squares_option_set
-    NewRelic::Logger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
+    NewRelic::PlatformLogger.expects(:warn).with('Metric Component/Test/rate[units] count, min, max, and sum_of_squares are all required if one is set, falling back to value only')
     assert_equal 100, initialize_metric(:sum_of_squares => 400).sum_of_squares
   end
 

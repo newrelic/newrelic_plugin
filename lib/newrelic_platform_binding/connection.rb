@@ -15,7 +15,7 @@ module NewRelic
 
       def send_request(data)
         begin
-          Logger.debug("JSON payload: #{data}")
+          PlatformLogger.debug("JSON payload: #{data}")
           uri = URI.parse(url)
           if Config.proxy.nil?
             http = Net::HTTP.new(uri.host, uri.port)
@@ -36,10 +36,10 @@ module NewRelic
           response = http.request(request)
           return evaluate_response(response)
         rescue Timeout::Error => err
-          Logger.warn "Connection Timeout Error: #{err.inspect} #{err.message}"
+          PlatformLogger.warn "Connection Timeout Error: #{err.inspect} #{err.message}"
           return false
         rescue => err
-          Logger.warn "HTTP Connection Error: #{err.inspect} #{err.message}"
+          PlatformLogger.warn "HTTP Connection Error: #{err.inspect} #{err.message}"
           return false
         end
       end
@@ -57,7 +57,7 @@ module NewRelic
               return_status = "FAILED[#{response.code}] <#{url}>: #{last_result["error"]}"
             end
           elsif response && response.code == '403' && response.body == "DISABLE_NEW_RELIC"
-            Logger.fatal "Agent has been disabled remotely by New Relic"
+            PlatformLogger.fatal "Agent has been disabled remotely by New Relic"
             abort "Agent has been disabled remotely by New Relic"
           else
             if response.body.size > 0
@@ -72,9 +72,9 @@ module NewRelic
         end
         if return_status
           if response and response.code == '503'
-            Logger.warn("Collector temporarily unavailable. Continuing.")
+            PlatformLogger.warn("Collector temporarily unavailable. Continuing.")
           else
-            Logger.error("#{return_status}")
+            PlatformLogger.error("#{return_status}")
           end
         end
 

@@ -4,7 +4,7 @@ module NewRelic
       def self.endpoint=(url)
         @endpoint = url
         if self.use_ssl? and !self.ssl_supported?
-          Logger.warn('Using SSL is not recommended when using Ruby versions below 1.9')
+          PlatformLogger.warn('Using SSL is not recommended when using Ruby versions below 1.9')
         end
       end
 
@@ -24,7 +24,7 @@ module NewRelic
         @endpoint = 'https://platform-api.newrelic.com'
       else
         @endpoint = 'http://platform-api.newrelic.com'
-        Logger.warn('SSL is disabled by default when using Ruby 1.8.x')
+        PlatformLogger.warn('SSL is disabled by default when using Ruby 1.8.x')
       end
       @uri = '/platform/v1/metrics'
       @ssl_host_verification = true
