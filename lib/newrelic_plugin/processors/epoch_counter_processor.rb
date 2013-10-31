@@ -4,10 +4,10 @@ class EpochCounter<NewRelic::Plugin::Processor::Base
       super :epoch_counter,"Epoch Counter"
     end
     def process val
-      val=val.to_f
       ret=nil
       curr_time=Time.now
-      if @last_value and @last_time and curr_time>@last_time
+      if val and @last_value and @last_time and curr_time>@last_time
+        val=val.to_f
         ret=(val-@last_value)/(curr_time-@last_time).to_f
       end
       @last_value=val
