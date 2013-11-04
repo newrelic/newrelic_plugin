@@ -1,8 +1,10 @@
 ## New Relic Ruby SDK Change Log ##
 
-### vNext - Future Date ###
+### v1.3.1 - November 4, 2013 ###
 
-**Features**
+**Bug Fixes**
+
+* Properly handle null values in epoch_counter_processor
 
 ### v1.3.0 - October 3, 2013 ###
 
