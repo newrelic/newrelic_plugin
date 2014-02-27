@@ -36,6 +36,21 @@ rake build
 gem install pkg/newrelic_plugin*
 ```
 
+## Configuration
+
+### Proxy Settings
+
+To configure the proxy settings, edit the `newrelic_plugin.yml` file and add to the `newrelic` section:
+
+```
+newrelic:
+  proxy:
+    address: PROXY_ADDRESS
+    port: PROXY_PORT
+    user: PROXY_USER
+    password: PROXY_PASSWORD
+```
+
 ## Support
 
 Reach out to us at
