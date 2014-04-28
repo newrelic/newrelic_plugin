@@ -18,7 +18,7 @@ module NewRelic
       def initialize
         @config = NewRelic::Plugin::Config.config
         @context = NewRelic::Binding::Context.new(
-          @config.newrelic['license_key']
+          @config.newrelic['license_key'] || ENV['NEWRELIC_LICENSE_KEY']
         )
         configuration_and_logging
       end
