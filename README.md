@@ -4,7 +4,8 @@
 
  * Tested with Ruby 1.8.7, 1.9.3, 2.0.0
  
- Note: In Ruby 1.8.7 SSL is disabled by default due to issues with how Net::HTTP handles connection timeouts. 
+**Note:** In Ruby 1.8.7 SSL is disabled by default due to issues with how Net::HTTP handles connection timeouts.
+
 If you override this the plugin may occasionally stop reporting data and require a restart.
 To override you can add the following to `newrelic:` section of the newrelic_config.yml. 
 
@@ -37,6 +38,30 @@ gem install pkg/newrelic_plugin*
 ```
 
 ## Configuration
+
+All configuration is done through the `newrelic_plugin.yml` file within the `config` directory of a plugin.
+
+### New Relic License Key
+
+The New Relic license key can be configured through the `newrelic_plugin.yml` file, or through an environment variable.
+
+#### Config file
+
+```
+newrelic:
+  #
+  # Update with your New Relic account license key:
+  #
+  license_key: 'YOUR_LICENSE_KEY_HERE'
+```
+
+#### Environment variable
+
+When running a plugin, pass the environment variable `NEWRELIC_LICENSE_KEY`.
+```
+NEWRELIC_LICENSE_KEY=YOUR_LICENSE_KEY_HERE ./<plugin_bin>
+```
+**Note:** Be sure to comment out the license_key in the `newrelic_plugin.yml` file when using the environment variable.
 
 ### Proxy Settings
 
