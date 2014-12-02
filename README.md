@@ -19,7 +19,7 @@ To override you can add the following to `newrelic:` section of the newrelic_con
 This repo represents the core Ruby gem used to build plugin agents for
 the New Relic platform. If you are looking to build or use a platform
 component, please refer to the
-[getting started documentation](http://newrelic.com/docs/platform/plugin-development).
+[getting started documentation](https://docs.newrelic.com/docs/plugins/developing-plugins).
 
 Install this gem by running `gem install newrelic_plugin` or add it to your
 [bundler](http://gembundler.com/) Gemfile like this:
