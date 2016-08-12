@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
                     "--main", "README.md"]
   s.extra_rdoc_files = %w[README.md LICENSE]
 
-  s.add_dependency 'json'
+  s.add_dependency 'json', '= 1.8.3'
 
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
