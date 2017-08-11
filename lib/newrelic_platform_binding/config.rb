@@ -30,8 +30,9 @@ module NewRelic
       @ssl_host_verification = true
       @poll_cycle_period = 60
       @proxy = nil
+      @ssl_ca_cert = nil
       class << self
-        attr_accessor :ssl_host_verification, :uri, :poll_cycle_period, :proxy
+        attr_accessor :ssl_host_verification, :uri, :poll_cycle_period, :proxy, :ssl_ca_cert
         attr_reader :endpoint
       end
     end
