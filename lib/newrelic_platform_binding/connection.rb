@@ -33,7 +33,7 @@ module NewRelic
           request = Net::HTTP::Post.new(uri.path)
           request['content-type'] = 'application/json'
           request['X-License-Key'] = @license_key
-          request['Content-Encoding'] = 'gzip'
+          request['Content-Encoding'] = 'deflate'
           request.body = Zlib::Deflate.deflate(data)
           response = http.request(request)
           return evaluate_response(response)
