@@ -27,6 +27,10 @@ module NewRelic
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE if Config.skip_ssl_host_verification?
           end
+          if not Config.ssl_ca_cert.nil?
+            http.ca_file = Config.ssl_ca_cert
+          end
+          puts Config.ssl_ca_cert
           http.open_timeout = 20
           http.read_timeout = 20
           request = Net::HTTP::Post.new(uri.path)

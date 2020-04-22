@@ -39,6 +39,11 @@ module NewRelic
           PlatformLogger.info("Disabling ssl host verification") unless NewRelic::Binding::Config.ssl_host_verification
         end
 
+        unless @config.newrelic['ssl_ca_cert']
+          NewRelic::Binding::Config.ssl_ca_cert = @config.newrelic['ssl_ca_cert']
+          PlatformLogger.info("Using custom CA CERT for verification, #{NewRelic::Binding::Config.ssl_ca_cert}" )
+        end
+
         if @config.newrelic['proxy']
           NewRelic::Binding::Config.proxy = @config.newrelic['proxy']
           PlatformLogger.info("Using a proxy: #{NewRelic::Binding::Config.proxy.inspect}")
