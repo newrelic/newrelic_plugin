@@ -2,6 +2,7 @@ require 'json'
 require 'uri'
 require 'net/http'
 require 'net/https'
+require 'zlib'
 
 module NewRelic
   module Binding
@@ -32,7 +33,8 @@ module NewRelic
           request = Net::HTTP::Post.new(uri.path)
           request['content-type'] = 'application/json'
           request['X-License-Key'] = @license_key
-          request.body = data
+          request['Content-Encoding'] = 'deflate'
+          request.body = Zlib::Deflate.deflate(data)
           response = http.request(request)
           return evaluate_response(response)
         rescue Timeout::Error => err
